@@ -7,796 +7,359 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Animación estilo Motion Graphics para la aparición del texto */
         @keyframes popIn {
             0% { opacity: 0; transform: scale(0.8) translateY(40px); }
             50% { opacity: 1; transform: scale(1.05) translateY(-10px); }
             75% { transform: scale(0.98) translateY(5px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
-
-        .animate-motion-pop {
-            animation: popIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        /* Animación para el Confeti */
+        .animate-motion-pop { animation: popIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes confettiFall {
             0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 1; }
             100% { transform: translateY(110vh) rotate(720deg) translateX(100px); opacity: 0; }
         }
-
-        /* Estilos personalizados para los sliders del panel */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
-            border-radius: 50%;
-            background: #e65d12;
-            cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 0 2px rgba(0,0,0,0.5);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #e2e8f0;
-            border-radius: 2px;
-        }
-        
-        body {
-            overflow-x: hidden;
-            background-color: #e65d12;
-        }
-
-        /* Capa de fondo para imagen subida */
-        #bg-image-layer {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: opacity 0.3s ease;
-        }
-
-        /* Animaciones para los paneles acordeón (Details) */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #e65d12; cursor: pointer; margin-top: -6px; box-shadow: 0 0 2px rgba(0,0,0,0.5); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px; }
+        body { overflow-x: hidden; background-color: #e65d12; }
+        #bg-image-layer { background-size: cover; background-position: center; background-repeat: no-repeat; transition: opacity 0.3s ease; }
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
-        details[open] summary .lucide-chevron-down { transform: rotate(180deg); }
     </style>
 </head>
 <body class="antialiased min-h-screen relative font-sans selection:bg-white selection:text-[#e65d12]">
 
-    <!-- Pantalla de carga inicial -->
+    <!-- Pantalla de carga -->
     <div id="initial-loader" class="fixed inset-0 bg-[#e65d12] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <i data-lucide="loader-2" class="w-12 h-12 text-white animate-spin mb-4"></i>
-        <p class="text-white font-bold text-lg">Preparando sorpresa...</p>
+        <p class="text-white font-bold text-lg">Cargando sorpresa...</p>
     </div>
 
-    <!-- Fondos de la landing -->
     <div id="bg-gradient-layer" class="fixed inset-0 bg-gradient-to-br from-[#e65d12] via-[#ff7e38] to-[#cc4e0b] -z-20"></div>
     <div id="bg-image-layer" class="fixed inset-0 opacity-0 -z-10"></div>
 
-    <!-- Botón para abrir panel de ajustes -->
-    <button id="btn-open-settings" class="fixed top-4 right-4 md:top-6 md:right-6 text-white hover:text-gray-200 transition-colors z-40 bg-white/20 p-3 rounded-full backdrop-blur-sm shadow-lg hover:scale-105 active:scale-95">
+    <button id="btn-open-settings" class="fixed top-4 right-4 text-white z-40 bg-white/20 p-3 rounded-full backdrop-blur-sm shadow-lg hover:scale-105 active:scale-95">
         <i data-lucide="settings" class="w-6 h-6"></i>
     </button>
 
-    <!-- Contenedor del Confeti -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden z-20"></div>
 
-    <!-- Contenido Principal -->
-    <main class="w-full min-h-screen px-4 md:px-6 flex flex-col items-center justify-center text-center z-10 relative">
-        
-        <!-- Logo -->
-        <div id="logo-wrapper" class="transition-transform duration-200 ease-out z-30">
-            <!-- Se usa mix-blend-screen por defecto -->
-            <img id="main-logo" src="LOGO-blanco.jpg" alt="Logo" class="w-40 sm:w-48 md:w-64 mb-8 md:mb-12 object-contain mix-blend-screen drop-shadow-2xl" onerror="this.style.display='none'">
+    <main class="w-full min-h-screen px-4 flex flex-col items-center justify-center text-center z-10 relative">
+        <div id="logo-wrapper" class="transition-transform duration-200 z-30">
+            <img id="main-logo" src="LOGO-blanco.jpg" alt="Logo" class="w-40 sm:w-48 mb-8 object-contain mix-blend-screen drop-shadow-2xl" onerror="this.style.display='none'">
         </div>
 
-        <!-- Botón de Acción -->
-        <button id="btn-reveal" class="bg-white text-[#e65d12] font-black text-lg sm:text-xl md:text-2xl py-3 px-8 md:py-4 md:px-10 rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.2)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all duration-300 ease-out flex items-center gap-2 group z-30">
-            ¡te lo mereces!
-            <i data-lucide="gift" class="w-5 h-5 md:w-6 md:h-6 group-hover:rotate-12 transition-transform"></i>
+        <button id="btn-reveal" class="bg-white text-[#e65d12] font-black text-lg py-3 px-8 rounded-full shadow-xl hover:-translate-y-1 transition-all z-30 flex items-center gap-2">
+            ¡te lo mereces! <i data-lucide="gift" class="w-5 h-5"></i>
         </button>
 
-        <!-- Contenedor del Mensaje Oculto -->
-        <div id="message-container" class="mt-8 md:mt-12 opacity-0 hidden w-full z-30 transition-transform duration-200 ease-out">
-            <div id="dynamic-text" class="text-white drop-shadow-md transition-colors duration-200">
-                <span id="line-1" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40px; font-weight: bold; text-align: center; color: #ffffff; line-height: 1.2;">¡SORPRESA!</span>
-                <span id="line-2" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 32px; font-weight: bold; text-align: center; color: #ffffff; line-height: 1.5;">Bono único especial para ti</span>
-                <span id="line-3" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24px; font-weight: normal; text-align: center; color: #ffffff; line-height: 1.5;">de 50$ depositados en tu cuenta.</span>
-                <span id="line-4" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 28px; font-weight: bold; text-align: center; color: #ffffff; line-height: 1.5;">Feliz día.</span>
+        <div id="message-container" class="mt-8 opacity-0 hidden w-full z-30">
+            <div id="dynamic-text" class="text-white drop-shadow-md">
+                <span id="line-1" class="block">¡SORPRESA!</span>
+                <span id="line-2" class="block">Bono único especial para ti</span>
+                <span id="line-3" class="block">de 50$ depositados en tu cuenta.</span>
+                <span id="line-4" class="block">Feliz día.</span>
             </div>
         </div>
-
     </main>
 
-    <!-- Modal de Contraseña -->
-    <div id="password-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300 px-4">
-        <div id="password-box" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform scale-95 transition-transform duration-300">
-            <div class="mx-auto w-12 h-12 bg-orange-100 text-[#e65d12] rounded-full flex items-center justify-center mb-4">
-                <i data-lucide="lock" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Acceso Restringido</h3>
-            <p class="text-sm text-gray-500 mb-6">Ingresa la contraseña para configurar la página.</p>
-            
-            <input type="password" id="settings-password" placeholder="Contraseña" class="w-full border-2 border-gray-200 focus:border-[#e65d12] focus:ring-0 p-3 rounded-xl mb-2 text-center text-lg outline-none transition-colors">
-            <p id="pwd-error" class="text-red-500 text-sm mb-4 h-5 opacity-0 transition-opacity">Contraseña incorrecta</p>
-            
-            <div class="flex gap-3 justify-center">
-                <button id="btn-cancel-pwd" class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors">Cancelar</button>
-                <button id="btn-submit-pwd" class="flex-1 bg-[#e65d12] text-white px-4 py-3 rounded-xl font-semibold hover:bg-[#cc4e0b] shadow-lg shadow-orange-500/30 transition-colors">Entrar</button>
+    <!-- Modal Password -->
+    <div id="password-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex flex-col items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
+            <h3 class="text-xl font-bold mb-4">Configuración</h3>
+            <input type="password" id="settings-password" placeholder="Contraseña" class="w-full border-2 p-3 rounded-xl mb-2 text-center outline-none focus:border-[#e65d12]">
+            <p id="pwd-error" class="text-red-500 text-sm mb-4 opacity-0">Incorrecta</p>
+            <div class="flex gap-2">
+                <button id="btn-cancel-pwd" class="flex-1 bg-gray-100 py-3 rounded-xl">Cancelar</button>
+                <button id="btn-submit-pwd" class="flex-1 bg-[#e65d12] text-white py-3 rounded-xl font-bold">Entrar</button>
             </div>
         </div>
     </div>
 
-    <!-- Panel Lateral de Ajustes -->
-    <aside id="settings-panel" class="fixed top-0 right-0 h-full w-full sm:w-80 md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-500 ease-in-out z-50 flex flex-col">
-        
-        <div class="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
-            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                <i data-lucide="sliders" class="w-5 h-5 text-[#e65d12]"></i>
-                Configuración
-            </h2>
-            <button id="btn-close-settings" class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
+    <!-- Panel de Ajustes -->
+    <aside id="settings-panel" class="fixed top-0 right-0 h-full w-full sm:w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-500 z-50 flex flex-col">
+        <div class="p-5 border-b flex justify-between items-center bg-gray-50">
+            <h2 class="font-bold flex items-center gap-2 text-gray-800"><i data-lucide="sliders" class="w-5 h-5 text-[#e65d12]"></i> Editor</h2>
+            <button id="btn-close-settings"><i data-lucide="x" class="w-6 h-6"></i></button>
         </div>
-
-        <div class="flex-1 overflow-y-auto p-5 md:p-6 space-y-6">
-            
-            <!-- Aviso si falta Base de Datos -->
-            <div id="db-warning" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-md">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <i data-lucide="alert-triangle" class="h-5 w-5 text-yellow-400"></i>
+        <div class="flex-1 overflow-y-auto p-5 space-y-6">
+            <!-- Fondos -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <label class="block text-xs font-bold text-[#e65d12] mb-3 uppercase">Fondos e Imágenes</label>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] text-gray-500 mb-1">Imagen de Fondo</label>
+                        <input type="file" id="ctrl-bg-upload" accept="image/*" class="w-full text-xs">
+                        <button id="btn-remove-bg" class="mt-1 text-[10px] text-red-500 hidden">Remover fondo</button>
                     </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-yellow-700">Modo Local: Los cambios solo se guardarán temporalmente en tu navegador porque falta conectar la base de datos.</p>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 mb-1">Subir Logo</label>
+                        <input type="file" id="ctrl-img-upload" accept="image/*" class="w-full text-xs">
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
-                    <i data-lucide="image" class="w-4 h-4"></i> Fondo de Pantalla
-                </label>
-                <div class="space-y-1">
-                    <label class="block text-xs font-semibold text-gray-600">Subir Imagen de Fondo</label>
-                    <input type="file" id="ctrl-bg-upload" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer">
-                    <button id="btn-remove-bg" class="mt-2 text-xs text-red-500 hover:text-red-700 hidden">Eliminar imagen y usar degradado</button>
+            <!-- Ajustes Logo -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                <label class="block text-xs font-bold text-[#e65d12] mb-1 uppercase">Ajustes Logo</label>
+                <div>
+                    <label class="flex justify-between text-[10px] text-gray-500 mb-1">Escala <span id="val-img-size">100%</span></label>
+                    <input type="range" id="ctrl-img-size" min="50" max="250" value="100">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[10px] text-gray-500 mb-1">Eje Y (Vertical) <span id="val-img-y">0px</span></label>
+                    <input type="range" id="ctrl-img-y" min="-300" max="300" value="0">
                 </div>
             </div>
 
-            <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
-                    <i data-lucide="image-plus" class="w-4 h-4"></i> Control de Logo
-                </label>
-                <div class="space-y-1">
-                    <label class="block text-xs font-semibold text-gray-600">Subir Logo (PNG/JPG)</label>
-                    <input type="file" id="ctrl-img-upload" accept="image/png, image/jpeg" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#e65d12] file:text-white hover:file:bg-[#cc4e0b] cursor-pointer">
-                </div>
-                <div class="space-y-1 pt-2">
-                    <label class="flex justify-between text-xs font-semibold text-gray-600">
-                        <span>Tamaño / Escala</span>
-                        <span id="val-img-size" class="text-[#e65d12]">100%</span>
-                    </label>
-                    <input type="range" id="ctrl-img-size" min="50" max="250" value="100" class="w-full h-2">
-                </div>
-                <div class="space-y-1">
-                    <label class="flex justify-between text-xs font-semibold text-gray-600">
-                        <span>Horizontal (X)</span>
-                        <span id="val-img-x" class="text-[#e65d12]">0px</span>
-                    </label>
-                    <input type="range" id="ctrl-img-x" min="-300" max="300" value="0" class="w-full h-2">
-                </div>
-                <div class="space-y-1">
-                    <label class="flex justify-between text-xs font-semibold text-gray-600">
-                        <span>Vertical (Y)</span>
-                        <span id="val-img-y" class="text-[#e65d12]">0px</span>
-                    </label>
-                    <input type="range" id="ctrl-img-y" min="-300" max="300" value="0" class="w-full h-2">
+            <!-- Ajustes Texto -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                <label class="block text-xs font-bold text-[#e65d12] mb-1 uppercase">Ajustes Mensaje</label>
+                <div>
+                    <label class="flex justify-between text-[10px] text-gray-500 mb-1">Eje Y (Vertical) <span id="val-text-y">0px</span></label>
+                    <input type="range" id="ctrl-text-y" min="-300" max="300" value="0">
                 </div>
             </div>
 
-            <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
-                    <i data-lucide="move" class="w-4 h-4"></i> Mover Todo el Mensaje
-                </label>
-                <div class="space-y-1">
-                    <label class="flex justify-between text-xs font-semibold text-gray-600">
-                        <span>Horizontal (X)</span>
-                        <span id="val-text-x" class="text-[#e65d12]">0px</span>
-                    </label>
-                    <input type="range" id="ctrl-text-x" min="-300" max="300" value="0" class="w-full h-2">
-                </div>
-                <div class="space-y-1 pt-2">
-                    <label class="flex justify-between text-xs font-semibold text-gray-600">
-                        <span>Vertical (Y)</span>
-                        <span id="val-text-y" class="text-[#e65d12]">0px</span>
-                    </label>
-                    <input type="range" id="ctrl-text-y" min="-300" max="300" value="0" class="w-full h-2">
-                </div>
-            </div>
+            <!-- Líneas Dinámicas -->
+            <div id="lines-accordion-container" class="space-y-2"></div>
 
-            <div class="space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-2 mb-2 flex items-center gap-2">
-                    <i data-lucide="type" class="w-4 h-4"></i> Edición por Líneas
-                </label>
-                <div id="lines-accordion-container" class="space-y-2">
-                    <!-- Acordeones dinámicos -->
-                </div>
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class="pt-4 border-t border-gray-200 space-y-3 pb-8">
-                <button id="btn-save-db" class="w-full bg-[#e65d12] hover:bg-[#cc4e0b] text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-orange-500/30 transition-all flex justify-center items-center gap-2">
-                    <i data-lucide="save" class="w-5 h-5"></i>
-                    Guardar y Publicar
+            <div class="pt-4 border-t space-y-2">
+                <button id="btn-save-db" class="w-full bg-[#e65d12] text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
+                    <i data-lucide="cloud-upload" class="w-5 h-5"></i> GUARDAR Y PUBLICAR
                 </button>
-                <button id="btn-replay-anim" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
-                    <i data-lucide="play" class="w-4 h-4"></i>
-                    Reproducir Animación
-                </button>
-                <button id="btn-reset" class="w-full border-2 border-red-500 text-red-500 hover:bg-red-50 font-bold py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    Reiniciar
-                </button>
+                <button id="btn-reset" class="w-full bg-gray-100 py-2 rounded-lg text-sm">Reiniciar Vista</button>
             </div>
         </div>
     </aside>
 
-    <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="overlay" class="fixed inset-0 bg-black/20 z-40 hidden opacity-0 transition-opacity"></div>
 
     <script type="module">
-        // Importaciones de Firebase (Compatibles con GitHub Pages)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ==========================================
-        //  // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDBOOT-lJFfRCDvzLoDGlhK8zL3u2R8IMc",
-  authDomain: "sorpresas-jgr.firebaseapp.com",
-  projectId: "sorpresas-jgr",
-  storageBucket: "sorpresas-jgr.firebasestorage.app",
-  messagingSenderId: "507602556978",
-  appId: "1:507602556978:web:e9900513fc842f7fd5442b"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig); ZONA PARA CONFIGURAR TU PROPIO FIREBASE
-        //  (Necesario para que el guardado funcione en tu propio GitHub)
-        // ==========================================
-        const myFirebaseConfig = {
-            // Reemplaza esto con tu configuración de Firebase cuando lo crees
-            // apiKey: "TU_API_KEY",
-            // authDomain: "tu-proyecto.firebaseapp.com",
-            // projectId: "tu-proyecto",
-            // storageBucket: "tu-proyecto.appspot.com",
-            // messagingSenderId: "TUS_NUMEROS",
-            // appId: "TU_APP_ID"
+        // CONFIGURACIÓN PROPORCIONADA POR EL USUARIO
+        const firebaseConfig = {
+          apiKey: "AIzaSyDBOOT-lJFfRCDvzLoDGlhK8zL3u2R8IMc",
+          authDomain: "sorpresas-jgr.firebaseapp.com",
+          projectId: "sorpresas-jgr",
+          storageBucket: "sorpresas-jgr.firebasestorage.app",
+          messagingSenderId: "507602556978",
+          appId: "1:507602556978:web:e9900513fc842f7fd5442b"
         };
-        const myAppId = "sorpresa-jgr-123"; // Pon un nombre único para tu proyecto
-        // ==========================================
 
-        // Detección de entorno (Para que funcione aquí y en GitHub)
-        const isCanvasEnv = typeof __firebase_config !== 'undefined';
-        const finalFirebaseConfig = isCanvasEnv ? JSON.parse(__firebase_config) : myFirebaseConfig;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : myAppId;
+        const appId = "sorpresa-personalizada-jgr";
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        let db = null;
-        let auth = null;
-        let isDbActive = false;
-
-        // Estado inicial de las líneas
+        // Estado inicial
         let linesConfig = [
-            { id: 1, text: "¡SORPRESA!", size: 40, bold: true, align: "center", lineHeight: 1.2, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" },
-            { id: 2, text: "Bono único especial para ti", size: 32, bold: true, align: "center", lineHeight: 1.5, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" },
-            { id: 3, text: "de 50$ depositados en tu cuenta.", size: 24, bold: false, align: "center", lineHeight: 1.5, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" },
-            { id: 4, text: "Feliz día.", size: 28, bold: true, align: "center", lineHeight: 1.5, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" }
+            { id: 1, text: "¡SORPRESA!", size: 40, bold: true, color: "#ffffff", align: "center" },
+            { id: 2, text: "Bono único especial para ti", size: 32, bold: true, color: "#ffffff", align: "center" },
+            { id: 3, text: "de 50$ depositados en tu cuenta.", size: 24, bold: false, color: "#ffffff", align: "center" },
+            { id: 4, text: "Feliz día.", size: 28, bold: true, color: "#ffffff", align: "center" }
         ];
-
         let logoTransform = { x: 0, y: 0, scale: 100 };
         let textTransform = { x: 0, y: 0 };
         let bgImageBase64 = "";
         let logoImageBase64 = "";
-        let isConfettiActive = false;
-        const PASSWORD_CORRECTA = "1234";
 
-        // DOM Elements
-        const btnReveal = document.getElementById('btn-reveal');
-        const msgContainer = document.getElementById('message-container');
-        const confettiContainer = document.getElementById('confetti-container');
-        const mainLogo = document.getElementById('main-logo');
-        const logoWrapper = document.getElementById('logo-wrapper');
-        const loaderEl = document.getElementById('initial-loader');
-        const pwdModal = document.getElementById('password-modal');
-        const inputPwd = document.getElementById('settings-password');
-        const errorPwd = document.getElementById('pwd-error');
-        const settingsPanel = document.getElementById('settings-panel');
-        const overlay = document.getElementById('overlay');
-        const bgImageLayer = document.getElementById('bg-image-layer');
-        const btnRemoveBg = document.getElementById('btn-remove-bg');
-        const dbWarning = document.getElementById('db-warning');
-        const accordionContainer = document.getElementById('lines-accordion-container');
-
-        // --- SISTEMA DE COMPRESIÓN DE IMÁGENES ---
-        const compressImage = (file, isLogo, callback) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const maxDim = isLogo ? 600 : 1200; 
-
-                    if (width > height && width > maxDim) {
-                        height *= maxDim / width;
-                        width = maxDim;
-                    } else if (height > maxDim) {
-                        width *= maxDim / height;
-                        height = maxDim;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const mimeType = isLogo ? 'image/png' : 'image/jpeg';
-                    const quality = isLogo ? undefined : 0.7;
-                    callback(canvas.toDataURL(mimeType, quality));
-                };
-            };
-        };
-
-        // --- INICIALIZACIÓN DE FIREBASE ---
-        const initSystem = async () => {
-            // Verificar si hay configuración de Firebase válida
-            if (Object.keys(finalFirebaseConfig).length === 0) {
-                console.warn("No hay BD configurada. Ejecutando en modo Local.");
-                dbWarning.classList.remove('hidden');
-                loadLocalSettings();
-                hideLoader();
-                return;
-            }
-
+        // Inicialización
+        async function start() {
             try {
-                const app = initializeApp(finalFirebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                isDbActive = true;
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        await loadSettingsFromDB();
-                        hideLoader();
-                    }
-                });
-            } catch (error) {
-                console.error("Error conectando a Firebase:", error);
-                dbWarning.classList.remove('hidden');
-                loadLocalSettings();
-                hideLoader();
-            }
-        };
-
-        const hideLoader = () => {
-            renderAccordions();
-            setupEventListeners();
-            applyUILayout();
-            loaderEl.classList.add('opacity-0');
-            setTimeout(() => {
-                loaderEl.classList.add('hidden');
-                lucide.createIcons();
-            }, 500);
-        };
-
-        const getConfigDocRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
-
-        const loadSettingsFromDB = async () => {
-            if(!db) return;
-            try {
-                const docSnap = await getDoc(getConfigDocRef());
+                await signInAnonymously(auth);
+                const docSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'));
                 if (docSnap.exists()) {
-                    applyDataState(docSnap.data());
+                    const data = docSnap.data();
+                    linesConfig = data.linesConfig || linesConfig;
+                    logoTransform = data.logoTransform || logoTransform;
+                    textTransform = data.textTransform || textTransform;
+                    bgImageBase64 = data.bgImageBase64 || "";
+                    logoImageBase64 = data.logoImageBase64 || "";
                 }
+                renderUI();
+                document.getElementById('initial-loader').classList.add('hidden');
             } catch (e) {
-                console.error("No se pudieron cargar los datos de la BD");
+                console.error("Error cargando configuración:", e);
+                document.getElementById('initial-loader').classList.add('hidden');
             }
-        };
+        }
 
-        const loadLocalSettings = () => {
-            const saved = localStorage.getItem('sorpresa_local_save');
-            if(saved) {
-                applyDataState(JSON.parse(saved));
-            }
-        };
-
-        const applyDataState = (data) => {
-            if (data.bgImageBase64) bgImageBase64 = data.bgImageBase64;
-            if (data.logoImageBase64) logoImageBase64 = data.logoImageBase64;
-            if (data.logoTransform) logoTransform = data.logoTransform;
-            if (data.textTransform) textTransform = data.textTransform;
-            if (data.linesConfig) linesConfig = data.linesConfig;
-        };
-
-        const applyUILayout = () => {
-            // Aplicar Fondo
+        function renderUI() {
+            // Fondo
             if (bgImageBase64) {
-                bgImageLayer.style.backgroundImage = `url(${bgImageBase64})`;
-                bgImageLayer.style.opacity = '1';
-                btnRemoveBg.classList.remove('hidden');
+                const bg = document.getElementById('bg-image-layer');
+                bg.style.backgroundImage = `url(${bgImageBase64})`;
+                bg.style.opacity = "1";
+                document.getElementById('btn-remove-bg').classList.remove('hidden');
             }
-            
-            // Aplicar Logo
+            // Logo
             if (logoImageBase64) {
-                mainLogo.src = logoImageBase64;
-                mainLogo.classList.remove('mix-blend-screen');
-                mainLogo.style.display = 'block';
+                const logo = document.getElementById('main-logo');
+                logo.src = logoImageBase64;
+                logo.classList.remove('mix-blend-screen');
+                logo.style.display = 'block';
             }
-
-            // Aplicar Transformaciones UI
-            document.getElementById('ctrl-img-size').value = logoTransform.scale;
-            document.getElementById('ctrl-img-x').value = logoTransform.x;
-            document.getElementById('ctrl-img-y').value = logoTransform.y;
-            document.getElementById('ctrl-text-x').value = textTransform.x;
-            document.getElementById('ctrl-text-y').value = textTransform.y;
+            // Transformaciones
+            document.getElementById('logo-wrapper').style.transform = `translate(${logoTransform.x}px, ${logoTransform.y}px) scale(${logoTransform.scale / 100})`;
+            document.getElementById('message-container').style.transform = `translate(${textTransform.x}px, ${textTransform.y}px)`;
             
-            updateLogoTransformUI();
-            updateTextTransformUI();
-            linesConfig.forEach(lineData => applyLineStyle(lineData));
-        };
-
-        const saveSettings = async () => {
-            const btnSaveDb = document.getElementById('btn-save-db');
-            
-            // Recolectar textos actualizados
-            const updatedLines = linesConfig.map(config => {
-                const textEl = document.getElementById(`ctrl-text-${config.id}`);
-                const fontEl = document.getElementById(`ctrl-font-${config.id}`);
-                const sizeEl = document.getElementById(`ctrl-size-${config.id}`);
-                const colorEl = document.getElementById(`ctrl-color-${config.id}`);
-                const boldEl = document.getElementById(`ctrl-bold-${config.id}`);
-                const lineHEl = document.getElementById(`ctrl-line-${config.id}`);
-                const domEl = document.getElementById(`line-${config.id}`);
-                
-                return {
-                    id: config.id,
-                    text: textEl ? textEl.value : config.text,
-                    font: fontEl ? fontEl.value : config.font,
-                    size: sizeEl ? sizeEl.value : config.size,
-                    color: colorEl ? colorEl.value : config.color,
-                    bold: boldEl ? boldEl.checked : config.bold,
-                    lineHeight: lineHEl ? lineHEl.value : config.lineHeight,
-                    align: domEl ? domEl.style.textAlign || config.align : config.align
-                };
+            // Textos
+            linesConfig.forEach(line => {
+                const el = document.getElementById(`line-${line.id}`);
+                if (el) {
+                    el.innerText = line.text;
+                    el.style.fontSize = line.size + "px";
+                    el.style.color = line.color;
+                    el.style.fontWeight = line.bold ? "bold" : "normal";
+                    el.style.textAlign = line.align;
+                }
             });
+            renderEditor();
+        }
 
-            const payload = {
-                logoTransform, textTransform, linesConfig: updatedLines, bgImageBase64, logoImageBase64
-            };
-
-            const originalBtnHtml = btnSaveDb.innerHTML;
-            btnSaveDb.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Guardando...';
-            btnSaveDb.classList.add('opacity-80', 'cursor-not-allowed');
-            lucide.createIcons();
-
-            try {
-                if (isDbActive && auth.currentUser) {
-                    await setDoc(getConfigDocRef(), payload);
-                } else {
-                    localStorage.setItem('sorpresa_local_save', JSON.stringify(payload));
-                }
-                
-                btnSaveDb.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> ¡Guardado exitoso!';
-                btnSaveDb.classList.remove('bg-[#e65d12]', 'hover:bg-[#cc4e0b]');
-                btnSaveDb.classList.add('bg-green-600', 'hover:bg-green-700');
-            } catch (error) {
-                console.error("Error guardando:", error);
-                btnSaveDb.innerHTML = '<i data-lucide="x-circle" class="w-5 h-5"></i> Error al guardar';
-            } finally {
-                lucide.createIcons();
-                setTimeout(() => {
-                    btnSaveDb.innerHTML = originalBtnHtml;
-                    btnSaveDb.classList.remove('opacity-80', 'cursor-not-allowed', 'bg-green-600', 'hover:bg-green-700');
-                    btnSaveDb.classList.add('bg-[#e65d12]', 'hover:bg-[#cc4e0b]');
-                    lucide.createIcons();
-                }, 3000);
-            }
-        };
-
-        // --- ANIMACIÓN Y CONTROLES UI ---
-        const generateConfetti = () => {
-            if (isConfettiActive) return; 
-            isConfettiActive = true;
-            const colors = ['#ffffff', '#000000', '#e65d12'];
-            const amount = window.innerWidth < 768 ? 50 : 100; 
-            for (let i = 0; i < amount; i++) {
-                const confetti = document.createElement('div');
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const width = Math.random() * 12 + 6; 
-                const height = Math.random() * 6 + 4;
-                const isBlurred = Math.random() > 0.8; 
-                
-                confetti.style.position = 'absolute';
-                confetti.style.left = `${Math.random() * 100}vw`;
-                confetti.style.top = `-50px`;
-                confetti.style.width = `${width}px`;
-                confetti.style.height = `${height}px`;
-                confetti.style.backgroundColor = color;
-                confetti.style.borderRadius = '2px';
-                
-                if (isBlurred) {
-                    confetti.style.filter = `blur(${Math.random() * 3 + 1}px)`;
-                    confetti.style.opacity = '0.8';
-                }
-                
-                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2.5}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${Math.random() * 5}s infinite`;
-                confettiContainer.appendChild(confetti);
-            }
-        };
-
-        const playAnimation = () => {
-            msgContainer.classList.remove('hidden');
-            void msgContainer.offsetWidth; 
-            msgContainer.classList.add('animate-motion-pop');
-            btnReveal.style.display = 'none'; 
-            generateConfetti();
-        };
-
-        const applyLineStyle = (config) => {
-            const lineEl = document.getElementById(`line-${config.id}`);
-            if(!lineEl) return;
-            lineEl.textContent = config.text;
-            lineEl.style.fontFamily = config.font;
-            lineEl.style.fontSize = `${config.size}px`;
-            lineEl.style.color = config.color;
-            lineEl.style.fontWeight = config.bold ? 'bold' : 'normal';
-            lineEl.style.lineHeight = config.lineHeight;
-            lineEl.style.textAlign = config.align;
-        };
-
-        const updateTextTransformUI = () => {
-            msgContainer.style.transform = `translate(${textTransform.x}px, ${textTransform.y}px)`;
-            document.getElementById('val-text-x').textContent = `${textTransform.x}px`;
-            document.getElementById('val-text-y').textContent = `${textTransform.y}px`;
-        };
-
-        const updateLogoTransformUI = () => {
-            logoWrapper.style.transform = `translate(${logoTransform.x}px, ${logoTransform.y}px) scale(${logoTransform.scale / 100})`;
-            document.getElementById('val-img-size').textContent = `${logoTransform.scale}%`;
-            document.getElementById('val-img-x').textContent = `${logoTransform.x}px`;
-            document.getElementById('val-img-y').textContent = `${logoTransform.y}px`;
-        };
-
-        // --- RENDERIZADO DEL PANEL DINÁMICO ---
-        const renderAccordions = () => {
-            accordionContainer.innerHTML = '';
-            linesConfig.forEach((config, index) => {
-                const isOpen = index === 0 ? 'open' : ''; 
+        function renderEditor() {
+            const container = document.getElementById('lines-accordion-container');
+            container.innerHTML = "";
+            linesConfig.forEach(line => {
                 const html = `
-                <details class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm" ${isOpen}>
-                    <summary class="cursor-pointer p-3 text-sm font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors flex justify-between items-center outline-none">
-                        Línea ${config.id}
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500 transition-transform"></i>
-                    </summary>
-                    <div class="p-4 space-y-4 border-t border-gray-200">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Texto</label>
-                            <input type="text" id="ctrl-text-${config.id}" value="${config.text}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Fuente</label>
-                            <select id="ctrl-font-${config.id}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] outline-none">
-                                <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" ${config.font.includes('Segoe') ? 'selected':''}>Modern Sans</option>
-                                <option value="Georgia, serif" ${config.font.includes('Georgia') ? 'selected':''}>Georgia</option>
-                                <option value="'Courier New', Courier, monospace" ${config.font.includes('Courier') ? 'selected':''}>Courier New</option>
-                                <option value="'Impact', sans-serif" ${config.font.includes('Impact') ? 'selected':''}>Impact</option>
-                                <option value="'Comic Sans MS', cursive, sans-serif" ${config.font.includes('Comic') ? 'selected':''}>Comic Sans</option>
-                            </select>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="flex-1">
-                                <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
-                                    <span>Tamaño</span>
-                                    <span id="val-size-${config.id}" class="text-[#e65d12]">${config.size}px</span>
-                                </label>
-                                <input type="range" id="ctrl-size-${config.id}" min="16" max="72" value="${config.size}" class="w-full h-2">
-                            </div>
-                            <div class="w-16">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Color</label>
-                                <input type="color" id="ctrl-color-${config.id}" value="${config.color}" class="w-full h-8 rounded cursor-pointer border-0 p-0 bg-transparent">
-                            </div>
-                        </div>
-                        <div class="flex gap-4 items-end">
-                            <div class="w-20">
-                                <label class="flex items-center gap-2 cursor-pointer pb-1">
-                                    <input type="checkbox" id="ctrl-bold-${config.id}" ${config.bold ? 'checked' : ''} class="w-4 h-4 text-[#e65d12] rounded border-gray-300 focus:ring-[#e65d12]">
-                                    <span class="text-xs font-semibold text-gray-600">Negrita</span>
-                                </label>
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Alineación</label>
-                                <div class="flex bg-gray-100 p-1 rounded-md">
-                                    <button id="btn-align-left-${config.id}" class="btn-align-${config.id} ${config.align === 'left' ? 'text-[#e65d12] bg-white shadow' : 'text-gray-600'} flex-1 py-1 rounded hover:bg-white transition-all"><i data-lucide="align-left" class="w-3.5 h-3.5 mx-auto"></i></button>
-                                    <button id="btn-align-center-${config.id}" class="btn-align-${config.id} ${config.align === 'center' ? 'text-[#e65d12] bg-white shadow' : 'text-gray-600'} flex-1 py-1 rounded transition-all"><i data-lucide="align-center" class="w-3.5 h-3.5 mx-auto"></i></button>
-                                    <button id="btn-align-right-${config.id}" class="btn-align-${config.id} ${config.align === 'right' ? 'text-[#e65d12] bg-white shadow' : 'text-gray-600'} flex-1 py-1 rounded hover:bg-white transition-all"><i data-lucide="align-right" class="w-3.5 h-3.5 mx-auto"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
-                                <span>Interlineado</span>
-                                <span id="val-line-${config.id}" class="text-[#e65d12]">${config.lineHeight}</span>
-                            </label>
-                            <input type="range" id="ctrl-line-${config.id}" min="1" max="3" step="0.1" value="${config.lineHeight}" class="w-full h-2">
+                    <div class="p-3 bg-gray-50 border rounded-lg text-xs space-y-2">
+                        <input type="text" value="${line.text}" oninput="window.updateLine(${line.id}, 'text', this.value)" class="w-full p-2 rounded border focus:border-[#e65d12] outline-none">
+                        <div class="flex gap-2 items-center">
+                            <input type="number" value="${line.size}" oninput="window.updateLine(${line.id}, 'size', this.value)" class="w-12 p-1 rounded border">
+                            <input type="color" value="${line.color}" oninput="window.updateLine(${line.id}, 'color', this.value)" class="flex-1 h-8 rounded border-0 p-0 bg-transparent cursor-pointer">
                         </div>
                     </div>
-                </details>
                 `;
-                accordionContainer.innerHTML += html;
+                container.innerHTML += html;
             });
             lucide.createIcons();
+        }
+
+        window.updateLine = (id, field, val) => {
+            const line = linesConfig.find(l => l.id === id);
+            if(field === 'size') val = parseInt(val);
+            line[field] = val;
+            renderUI();
         };
 
-        const setupEventListeners = () => {
-            // Contraseña y Modal
-            document.getElementById('btn-open-settings').addEventListener('click', () => {
-                pwdModal.classList.remove('hidden');
-                setTimeout(() => { pwdModal.classList.remove('opacity-0'); document.getElementById('password-box').classList.remove('scale-95'); }, 10);
-                inputPwd.value = '';
-                errorPwd.classList.remove('opacity-100');
-                inputPwd.focus();
-            });
-
-            document.getElementById('btn-cancel-pwd').addEventListener('click', () => {
-                pwdModal.classList.add('opacity-0');
-                document.getElementById('password-box').classList.add('scale-95');
-                setTimeout(() => { pwdModal.classList.add('hidden'); }, 300);
-            });
-
-            const verifyPassword = () => {
-                if (inputPwd.value === PASSWORD_CORRECTA) {
-                    pwdModal.classList.add('opacity-0');
-                    document.getElementById('password-box').classList.add('scale-95');
-                    setTimeout(() => { pwdModal.classList.add('hidden'); }, 300);
-                    settingsPanel.classList.remove('translate-x-full');
-                    overlay.classList.remove('hidden');
-                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-                } else {
-                    errorPwd.classList.add('opacity-100');
-                    inputPwd.value = ''; inputPwd.focus();
-                }
-            };
-            document.getElementById('btn-submit-pwd').addEventListener('click', verifyPassword);
-            inputPwd.addEventListener('keypress', (e) => { if(e.key === 'Enter') verifyPassword(); });
-
-            const closePanel = () => {
-                settingsPanel.classList.add('translate-x-full');
-                overlay.classList.add('opacity-0');
-                setTimeout(() => overlay.classList.add('hidden'), 500);
-            };
-            document.getElementById('btn-close-settings').addEventListener('click', closePanel);
-            overlay.addEventListener('click', closePanel);
-
-            // Botones Principales
-            btnReveal.addEventListener('click', playAnimation);
-            document.getElementById('btn-replay-anim').addEventListener('click', playAnimation);
-            document.getElementById('btn-reset').addEventListener('click', () => {
-                msgContainer.classList.add('hidden');
-                msgContainer.classList.remove('animate-motion-pop');
-                btnReveal.style.display = 'flex';
-                confettiContainer.innerHTML = '';
-                isConfettiActive = false;
-                closePanel();
-            });
-
-            // Guardado
-            document.getElementById('btn-save-db').addEventListener('click', saveSettings);
-
-            // Subida de Imágenes
-            document.getElementById('ctrl-bg-upload').addEventListener('change', (e) => {
+        // Compresión y manejo de archivos
+        const handleFileUpload = (inputId, type) => {
+            document.getElementById(inputId).onchange = e => {
                 const file = e.target.files[0];
-                if (file) {
-                    compressImage(file, false, (base64) => {
-                        bgImageBase64 = base64;
-                        bgImageLayer.style.backgroundImage = `url(${base64})`;
-                        bgImageLayer.style.opacity = '1';
-                        btnRemoveBg.classList.remove('hidden');
-                    });
-                }
-            });
-
-            btnRemoveBg.addEventListener('click', () => {
-                bgImageLayer.style.opacity = '0';
-                setTimeout(() => { bgImageLayer.style.backgroundImage = 'none'; }, 300);
-                bgImageBase64 = "";
-                document.getElementById('ctrl-bg-upload').value = ''; 
-                btnRemoveBg.classList.add('hidden');
-            });
-
-            document.getElementById('ctrl-img-upload').addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    compressImage(file, true, (base64) => {
-                        logoImageBase64 = base64;
-                        mainLogo.src = base64;
-                        mainLogo.classList.remove('mix-blend-screen');
-                        mainLogo.style.display = 'block';
-                    });
-                }
-            });
-
-            // Transformaciones
-            document.getElementById('ctrl-text-x').addEventListener('input', (e) => { textTransform.x = e.target.value; updateTextTransformUI(); });
-            document.getElementById('ctrl-text-y').addEventListener('input', (e) => { textTransform.y = e.target.value; updateTextTransformUI(); });
-            document.getElementById('ctrl-img-size').addEventListener('input', (e) => { logoTransform.scale = e.target.value; updateLogoTransformUI(); });
-            document.getElementById('ctrl-img-x').addEventListener('input', (e) => { logoTransform.x = e.target.value; updateLogoTransformUI(); });
-            document.getElementById('ctrl-img-y').addEventListener('input', (e) => { logoTransform.y = e.target.value; updateLogoTransformUI(); });
-
-            // Event Listeners Dinámicos de Líneas
-            linesConfig.forEach(config => {
-                const lineEl = document.getElementById(`line-${config.id}`);
-                const ctrlText = document.getElementById(`ctrl-text-${config.id}`);
-                const ctrlFont = document.getElementById(`ctrl-font-${config.id}`);
-                const ctrlSize = document.getElementById(`ctrl-size-${config.id}`);
-                const valSize = document.getElementById(`val-size-${config.id}`);
-                const ctrlColor = document.getElementById(`ctrl-color-${config.id}`);
-                const ctrlBold = document.getElementById(`ctrl-bold-${config.id}`);
-                const ctrlLine = document.getElementById(`ctrl-line-${config.id}`);
-                const valLine = document.getElementById(`val-line-${config.id}`);
-                const btnLeft = document.getElementById(`btn-align-left-${config.id}`);
-                const btnCenter = document.getElementById(`btn-align-center-${config.id}`);
-                const btnRight = document.getElementById(`btn-align-right-${config.id}`);
-                const allAlignBtns = document.querySelectorAll(`.btn-align-${config.id}`);
-
-                ctrlText.addEventListener('input', (e) => lineEl.textContent = e.target.value);
-                ctrlFont.addEventListener('change', (e) => lineEl.style.fontFamily = e.target.value);
-                ctrlSize.addEventListener('input', (e) => { lineEl.style.fontSize = `${e.target.value}px`; valSize.textContent = `${e.target.value}px`; });
-                ctrlColor.addEventListener('input', (e) => lineEl.style.color = e.target.value);
-                ctrlBold.addEventListener('change', (e) => { lineEl.style.fontWeight = e.target.checked ? 'bold' : 'normal'; });
-                ctrlLine.addEventListener('input', (e) => { lineEl.style.lineHeight = e.target.value; valLine.textContent = e.target.value; });
-
-                const setAlign = (alignValue, clickedBtn) => {
-                    lineEl.style.textAlign = alignValue;
-                    allAlignBtns.forEach(btn => {
-                        btn.classList.remove('text-[#e65d12]', 'bg-white', 'shadow');
-                        btn.classList.add('text-gray-600');
-                    });
-                    clickedBtn.classList.remove('text-gray-600');
-                    clickedBtn.classList.add('text-[#e65d12]', 'bg-white', 'shadow');
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const img = new Image();
+                    img.src = reader.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        const max = type === 'bg' ? 1200 : 600;
+                        if(w > max) { h *= max/w; w = max; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        const b64 = canvas.toDataURL('image/jpeg', 0.75);
+                        if(type === 'bg') bgImageBase64 = b64;
+                        else logoImageBase64 = b64;
+                        renderUI();
+                    };
                 };
-
-                btnLeft.addEventListener('click', () => setAlign('left', btnLeft));
-                btnCenter.addEventListener('click', () => setAlign('center', btnCenter));
-                btnRight.addEventListener('click', () => setAlign('right', btnRight));
-            });
+            };
         };
 
-        // Arrancar Sistema
-        initSystem();
+        handleFileUpload('ctrl-bg-upload', 'bg');
+        handleFileUpload('ctrl-img-upload', 'logo');
 
+        // Controles de Sliders
+        document.getElementById('ctrl-img-size').oninput = e => {
+            logoTransform.scale = e.target.value;
+            document.getElementById('val-img-size').innerText = e.target.value + "%";
+            renderUI();
+        };
+        document.getElementById('ctrl-img-y').oninput = e => {
+            logoTransform.y = e.target.value;
+            document.getElementById('val-img-y').innerText = e.target.value + "px";
+            renderUI();
+        };
+        document.getElementById('ctrl-text-y').oninput = e => {
+            textTransform.y = e.target.value;
+            document.getElementById('val-text-y').innerText = e.target.value + "px";
+            renderUI();
+        };
+
+        document.getElementById('btn-remove-bg').onclick = () => {
+            bgImageBase64 = "";
+            document.getElementById('bg-image-layer').style.opacity = "0";
+            document.getElementById('btn-remove-bg').classList.add('hidden');
+            renderUI();
+        };
+
+        // Guardado Final
+        document.getElementById('btn-save-db').onclick = async () => {
+            const btn = document.getElementById('btn-save-db');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Guardando...';
+            lucide.createIcons();
+
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), {
+                    linesConfig, logoTransform, textTransform, bgImageBase64, logoImageBase64
+                });
+                btn.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i> ¡CAMBIOS PUBLICADOS!';
+                btn.classList.replace('bg-[#e65d12]', 'bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.replace('bg-green-600', 'bg-[#e65d12]');
+                    lucide.createIcons();
+                }, 3000);
+            } catch (e) {
+                console.error(e);
+                btn.innerText = "Error al guardar";
+            }
+        };
+
+        // Modal y Panel
+        document.getElementById('btn-open-settings').onclick = () => {
+            document.getElementById('password-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('password-modal').classList.add('opacity-100'), 10);
+        };
+        document.getElementById('btn-cancel-pwd').onclick = () => {
+            document.getElementById('password-modal').classList.remove('opacity-100');
+            setTimeout(() => document.getElementById('password-modal').classList.add('hidden'), 300);
+        };
+        document.getElementById('btn-submit-pwd').onclick = () => {
+            if(document.getElementById('settings-password').value === "1234") {
+                document.getElementById('password-modal').classList.add('hidden');
+                document.getElementById('settings-panel').classList.remove('translate-x-full');
+                document.getElementById('overlay').classList.remove('hidden');
+                setTimeout(() => document.getElementById('overlay').classList.add('opacity-100'), 10);
+            } else {
+                document.getElementById('pwd-error').classList.add('opacity-100');
+            }
+        };
+        document.getElementById('btn-close-settings').onclick = () => {
+            document.getElementById('settings-panel').classList.add('translate-x-full');
+            document.getElementById('overlay').classList.remove('opacity-100');
+            setTimeout(() => document.getElementById('overlay').classList.add('hidden'), 300);
+        };
+
+        document.getElementById('btn-reveal').onclick = () => {
+            document.getElementById('message-container').classList.remove('hidden');
+            document.getElementById('message-container').classList.add('animate-motion-pop');
+            document.getElementById('btn-reveal').style.display = 'none';
+            // Efecto Confeti Simple
+            for(let i=0; i<60; i++){
+                const c = document.createElement('div');
+                c.style.cssText = `position:absolute;width:8px;height:8px;background:${['#fff','#000','#ff7e38'][Math.floor(Math.random()*3)]};left:${Math.random()*100}vw;top:-10px;animation:confettiFall ${2+Math.random()*2}s linear forwards;border-radius:2px;z-index:20;`;
+                document.getElementById('confetti-container').appendChild(c);
+            }
+        };
+
+        start();
     </script>
 </body>
 </html>
