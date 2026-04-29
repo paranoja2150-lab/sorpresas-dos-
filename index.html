@@ -9,21 +9,10 @@
     <style>
         /* Animación estilo Motion Graphics para la aparición del texto */
         @keyframes popIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) translateY(40px);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.05) translateY(-10px);
-            }
-            75% {
-                transform: scale(0.98) translateY(5px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            0% { opacity: 0; transform: scale(0.8) translateY(40px); }
+            50% { opacity: 1; transform: scale(1.05) translateY(-10px); }
+            75% { transform: scale(0.98) translateY(5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .animate-motion-pop {
@@ -60,7 +49,6 @@
             border-radius: 2px;
         }
         
-        /* Ocultar el panel de scroll horizontal global si es necesario */
         body {
             overflow-x: hidden;
             background-color: #e65d12;
@@ -75,18 +63,18 @@
         }
 
         /* Animaciones para los paneles acordeón (Details) */
-        details > summary {
-            list-style: none;
-        }
-        details > summary::-webkit-details-marker {
-            display: none;
-        }
-        details[open] summary .lucide-chevron-down {
-            transform: rotate(180deg);
-        }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary .lucide-chevron-down { transform: rotate(180deg); }
     </style>
 </head>
 <body class="antialiased min-h-screen relative font-sans selection:bg-white selection:text-[#e65d12]">
+
+    <!-- Pantalla de carga inicial -->
+    <div id="initial-loader" class="fixed inset-0 bg-[#e65d12] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <i data-lucide="loader-2" class="w-12 h-12 text-white animate-spin mb-4"></i>
+        <p class="text-white font-bold text-lg">Preparando sorpresa...</p>
+    </div>
 
     <!-- Fondos de la landing -->
     <div id="bg-gradient-layer" class="fixed inset-0 bg-gradient-to-br from-[#e65d12] via-[#ff7e38] to-[#cc4e0b] -z-20"></div>
@@ -106,7 +94,7 @@
         <!-- Logo -->
         <div id="logo-wrapper" class="transition-transform duration-200 ease-out z-30">
             <!-- Se usa mix-blend-screen por defecto -->
-            <img id="main-logo" src="LOGO-blanco.jpg" alt="JGR Logo" class="w-40 sm:w-48 md:w-64 mb-8 md:mb-12 object-contain mix-blend-screen drop-shadow-2xl">
+            <img id="main-logo" src="LOGO-blanco.jpg" alt="Logo" class="w-40 sm:w-48 md:w-64 mb-8 md:mb-12 object-contain mix-blend-screen drop-shadow-2xl" onerror="this.style.display='none'">
         </div>
 
         <!-- Botón de Acción -->
@@ -127,7 +115,7 @@
 
     </main>
 
-    <!-- Modal de Contraseña (Custom UI) -->
+    <!-- Modal de Contraseña -->
     <div id="password-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300 px-4">
         <div id="password-box" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform scale-95 transition-transform duration-300">
             <div class="mx-auto w-12 h-12 bg-orange-100 text-[#e65d12] rounded-full flex items-center justify-center mb-4">
@@ -149,7 +137,6 @@
     <!-- Panel Lateral de Ajustes -->
     <aside id="settings-panel" class="fixed top-0 right-0 h-full w-full sm:w-80 md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-500 ease-in-out z-50 flex flex-col">
         
-        <!-- Cabecera del Panel -->
         <div class="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
             <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <i data-lucide="sliders" class="w-5 h-5 text-[#e65d12]"></i>
@@ -160,10 +147,20 @@
             </button>
         </div>
 
-        <!-- Controles -->
         <div class="flex-1 overflow-y-auto p-5 md:p-6 space-y-6">
             
-            <!-- Carga de Fondo de Pantalla -->
+            <!-- Aviso si falta Base de Datos -->
+            <div id="db-warning" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-md">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i data-lucide="alert-triangle" class="h-5 w-5 text-yellow-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">Modo Local: Los cambios solo se guardarán temporalmente en tu navegador porque falta conectar la base de datos.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
                 <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
                     <i data-lucide="image" class="w-4 h-4"></i> Fondo de Pantalla
@@ -175,7 +172,6 @@
                 </div>
             </div>
 
-            <!-- Carga y Posición del Logo -->
             <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
                 <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
                     <i data-lucide="image-plus" class="w-4 h-4"></i> Control de Logo
@@ -207,7 +203,6 @@
                 </div>
             </div>
 
-            <!-- Posición Global del Texto -->
             <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
                 <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
                     <i data-lucide="move" class="w-4 h-4"></i> Mover Todo el Mensaje
@@ -228,104 +223,321 @@
                 </div>
             </div>
 
-            <!-- Sección de Textos por Línea (Acordeones) -->
             <div class="space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
                 <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-2 mb-2 flex items-center gap-2">
                     <i data-lucide="type" class="w-4 h-4"></i> Edición por Líneas
                 </label>
-
-                <!-- Bloque Generado Dinámicamente para las 4 Líneas en JS -->
                 <div id="lines-accordion-container" class="space-y-2">
-                    <!-- JS inyectará aquí los 4 acordeones -->
+                    <!-- Acordeones dinámicos -->
                 </div>
             </div>
 
             <!-- Botones de Acción -->
             <div class="pt-4 border-t border-gray-200 space-y-3 pb-8">
-                 <button id="btn-replay-anim" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                <button id="btn-save-db" class="w-full bg-[#e65d12] hover:bg-[#cc4e0b] text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-orange-500/30 transition-all flex justify-center items-center gap-2">
+                    <i data-lucide="save" class="w-5 h-5"></i>
+                    Guardar y Publicar
+                </button>
+                <button id="btn-replay-anim" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
                     <i data-lucide="play" class="w-4 h-4"></i>
                     Reproducir Animación
                 </button>
                 <button id="btn-reset" class="w-full border-2 border-red-500 text-red-500 hover:bg-red-50 font-bold py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
                     <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    Reiniciar desde el principio
+                    Reiniciar
                 </button>
             </div>
         </div>
     </aside>
 
-    <!-- Overlay oscuro para el panel -->
     <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
 
-    <script>
-        // Inicializar Iconos Globales
-        lucide.createIcons();
+    <script type="module">
+        // Importaciones de Firebase (Compatibles con GitHub Pages)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Elementos del DOM Generales
+        // ==========================================
+        //  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDBOOT-lJFfRCDvzLoDGlhK8zL3u2R8IMc",
+  authDomain: "sorpresas-jgr.firebaseapp.com",
+  projectId: "sorpresas-jgr",
+  storageBucket: "sorpresas-jgr.firebasestorage.app",
+  messagingSenderId: "507602556978",
+  appId: "1:507602556978:web:e9900513fc842f7fd5442b"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig); ZONA PARA CONFIGURAR TU PROPIO FIREBASE
+        //  (Necesario para que el guardado funcione en tu propio GitHub)
+        // ==========================================
+        const myFirebaseConfig = {
+            // Reemplaza esto con tu configuración de Firebase cuando lo crees
+            // apiKey: "TU_API_KEY",
+            // authDomain: "tu-proyecto.firebaseapp.com",
+            // projectId: "tu-proyecto",
+            // storageBucket: "tu-proyecto.appspot.com",
+            // messagingSenderId: "TUS_NUMEROS",
+            // appId: "TU_APP_ID"
+        };
+        const myAppId = "sorpresa-jgr-123"; // Pon un nombre único para tu proyecto
+        // ==========================================
+
+        // Detección de entorno (Para que funcione aquí y en GitHub)
+        const isCanvasEnv = typeof __firebase_config !== 'undefined';
+        const finalFirebaseConfig = isCanvasEnv ? JSON.parse(__firebase_config) : myFirebaseConfig;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : myAppId;
+
+        let db = null;
+        let auth = null;
+        let isDbActive = false;
+
+        // Estado inicial de las líneas
+        let linesConfig = [
+            { id: 1, text: "¡SORPRESA!", size: 40, bold: true, align: "center", lineHeight: 1.2, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" },
+            { id: 2, text: "Bono único especial para ti", size: 32, bold: true, align: "center", lineHeight: 1.5, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" },
+            { id: 3, text: "de 50$ depositados en tu cuenta.", size: 24, bold: false, align: "center", lineHeight: 1.5, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" },
+            { id: 4, text: "Feliz día.", size: 28, bold: true, align: "center", lineHeight: 1.5, font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#ffffff" }
+        ];
+
+        let logoTransform = { x: 0, y: 0, scale: 100 };
+        let textTransform = { x: 0, y: 0 };
+        let bgImageBase64 = "";
+        let logoImageBase64 = "";
+        let isConfettiActive = false;
+        const PASSWORD_CORRECTA = "1234";
+
+        // DOM Elements
         const btnReveal = document.getElementById('btn-reveal');
         const msgContainer = document.getElementById('message-container');
         const confettiContainer = document.getElementById('confetti-container');
         const mainLogo = document.getElementById('main-logo');
         const logoWrapper = document.getElementById('logo-wrapper');
-        
-        // Modal de Contraseña
-        const btnOpenSettings = document.getElementById('btn-open-settings');
+        const loaderEl = document.getElementById('initial-loader');
         const pwdModal = document.getElementById('password-modal');
-        const pwdBox = document.getElementById('password-box');
         const inputPwd = document.getElementById('settings-password');
-        const btnCancelPwd = document.getElementById('btn-cancel-pwd');
-        const btnSubmitPwd = document.getElementById('btn-submit-pwd');
         const errorPwd = document.getElementById('pwd-error');
-
-        // Panel y Overlay
         const settingsPanel = document.getElementById('settings-panel');
-        const btnCloseSettings = document.getElementById('btn-close-settings');
         const overlay = document.getElementById('overlay');
-        
-        // Botones de Acción
-        const btnReplayAnim = document.getElementById('btn-replay-anim');
-        const btnReset = document.getElementById('btn-reset');
-
-        // Controles Globales (Posición y Fondos)
-        const ctrlTextX = document.getElementById('ctrl-text-x');
-        const ctrlTextY = document.getElementById('ctrl-text-y');
-        const valTextX = document.getElementById('val-text-x');
-        const valTextY = document.getElementById('val-text-y');
-        const ctrlImgUpload = document.getElementById('ctrl-img-upload');
-        const ctrlImgSize = document.getElementById('ctrl-img-size');
-        const ctrlImgX = document.getElementById('ctrl-img-x');
-        const ctrlImgY = document.getElementById('ctrl-img-y');
-        const ctrlBgUpload = document.getElementById('ctrl-bg-upload');
-        const btnRemoveBg = document.getElementById('btn-remove-bg');
         const bgImageLayer = document.getElementById('bg-image-layer');
+        const btnRemoveBg = document.getElementById('btn-remove-bg');
+        const dbWarning = document.getElementById('db-warning');
+        const accordionContainer = document.getElementById('lines-accordion-container');
 
-        // Displays Globales
-        const valImgSize = document.getElementById('val-img-size');
-        const valImgX = document.getElementById('val-img-x');
-        const valImgY = document.getElementById('val-img-y');
+        // --- SISTEMA DE COMPRESIÓN DE IMÁGENES ---
+        const compressImage = (file, isLogo, callback) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = isLogo ? 600 : 1200; 
 
-        // Variables de estado
-        let isConfettiActive = false;
-        const PASSWORD_CORRECTA = "1234";
-        let logoTransform = { x: 0, y: 0, scale: 100 };
-        let textTransform = { x: 0, y: 0 };
+                    if (width > height && width > maxDim) {
+                        height *= maxDim / width;
+                        width = maxDim;
+                    } else if (height > maxDim) {
+                        width *= maxDim / height;
+                        height = maxDim;
+                    }
 
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
 
-        // --- FUNCIONES DE CONFETI Y ANIMACIÓN ---
-        function generateConfetti() {
+                    const mimeType = isLogo ? 'image/png' : 'image/jpeg';
+                    const quality = isLogo ? undefined : 0.7;
+                    callback(canvas.toDataURL(mimeType, quality));
+                };
+            };
+        };
+
+        // --- INICIALIZACIÓN DE FIREBASE ---
+        const initSystem = async () => {
+            // Verificar si hay configuración de Firebase válida
+            if (Object.keys(finalFirebaseConfig).length === 0) {
+                console.warn("No hay BD configurada. Ejecutando en modo Local.");
+                dbWarning.classList.remove('hidden');
+                loadLocalSettings();
+                hideLoader();
+                return;
+            }
+
+            try {
+                const app = initializeApp(finalFirebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isDbActive = true;
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        await loadSettingsFromDB();
+                        hideLoader();
+                    }
+                });
+            } catch (error) {
+                console.error("Error conectando a Firebase:", error);
+                dbWarning.classList.remove('hidden');
+                loadLocalSettings();
+                hideLoader();
+            }
+        };
+
+        const hideLoader = () => {
+            renderAccordions();
+            setupEventListeners();
+            applyUILayout();
+            loaderEl.classList.add('opacity-0');
+            setTimeout(() => {
+                loaderEl.classList.add('hidden');
+                lucide.createIcons();
+            }, 500);
+        };
+
+        const getConfigDocRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
+
+        const loadSettingsFromDB = async () => {
+            if(!db) return;
+            try {
+                const docSnap = await getDoc(getConfigDocRef());
+                if (docSnap.exists()) {
+                    applyDataState(docSnap.data());
+                }
+            } catch (e) {
+                console.error("No se pudieron cargar los datos de la BD");
+            }
+        };
+
+        const loadLocalSettings = () => {
+            const saved = localStorage.getItem('sorpresa_local_save');
+            if(saved) {
+                applyDataState(JSON.parse(saved));
+            }
+        };
+
+        const applyDataState = (data) => {
+            if (data.bgImageBase64) bgImageBase64 = data.bgImageBase64;
+            if (data.logoImageBase64) logoImageBase64 = data.logoImageBase64;
+            if (data.logoTransform) logoTransform = data.logoTransform;
+            if (data.textTransform) textTransform = data.textTransform;
+            if (data.linesConfig) linesConfig = data.linesConfig;
+        };
+
+        const applyUILayout = () => {
+            // Aplicar Fondo
+            if (bgImageBase64) {
+                bgImageLayer.style.backgroundImage = `url(${bgImageBase64})`;
+                bgImageLayer.style.opacity = '1';
+                btnRemoveBg.classList.remove('hidden');
+            }
+            
+            // Aplicar Logo
+            if (logoImageBase64) {
+                mainLogo.src = logoImageBase64;
+                mainLogo.classList.remove('mix-blend-screen');
+                mainLogo.style.display = 'block';
+            }
+
+            // Aplicar Transformaciones UI
+            document.getElementById('ctrl-img-size').value = logoTransform.scale;
+            document.getElementById('ctrl-img-x').value = logoTransform.x;
+            document.getElementById('ctrl-img-y').value = logoTransform.y;
+            document.getElementById('ctrl-text-x').value = textTransform.x;
+            document.getElementById('ctrl-text-y').value = textTransform.y;
+            
+            updateLogoTransformUI();
+            updateTextTransformUI();
+            linesConfig.forEach(lineData => applyLineStyle(lineData));
+        };
+
+        const saveSettings = async () => {
+            const btnSaveDb = document.getElementById('btn-save-db');
+            
+            // Recolectar textos actualizados
+            const updatedLines = linesConfig.map(config => {
+                const textEl = document.getElementById(`ctrl-text-${config.id}`);
+                const fontEl = document.getElementById(`ctrl-font-${config.id}`);
+                const sizeEl = document.getElementById(`ctrl-size-${config.id}`);
+                const colorEl = document.getElementById(`ctrl-color-${config.id}`);
+                const boldEl = document.getElementById(`ctrl-bold-${config.id}`);
+                const lineHEl = document.getElementById(`ctrl-line-${config.id}`);
+                const domEl = document.getElementById(`line-${config.id}`);
+                
+                return {
+                    id: config.id,
+                    text: textEl ? textEl.value : config.text,
+                    font: fontEl ? fontEl.value : config.font,
+                    size: sizeEl ? sizeEl.value : config.size,
+                    color: colorEl ? colorEl.value : config.color,
+                    bold: boldEl ? boldEl.checked : config.bold,
+                    lineHeight: lineHEl ? lineHEl.value : config.lineHeight,
+                    align: domEl ? domEl.style.textAlign || config.align : config.align
+                };
+            });
+
+            const payload = {
+                logoTransform, textTransform, linesConfig: updatedLines, bgImageBase64, logoImageBase64
+            };
+
+            const originalBtnHtml = btnSaveDb.innerHTML;
+            btnSaveDb.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Guardando...';
+            btnSaveDb.classList.add('opacity-80', 'cursor-not-allowed');
+            lucide.createIcons();
+
+            try {
+                if (isDbActive && auth.currentUser) {
+                    await setDoc(getConfigDocRef(), payload);
+                } else {
+                    localStorage.setItem('sorpresa_local_save', JSON.stringify(payload));
+                }
+                
+                btnSaveDb.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> ¡Guardado exitoso!';
+                btnSaveDb.classList.remove('bg-[#e65d12]', 'hover:bg-[#cc4e0b]');
+                btnSaveDb.classList.add('bg-green-600', 'hover:bg-green-700');
+            } catch (error) {
+                console.error("Error guardando:", error);
+                btnSaveDb.innerHTML = '<i data-lucide="x-circle" class="w-5 h-5"></i> Error al guardar';
+            } finally {
+                lucide.createIcons();
+                setTimeout(() => {
+                    btnSaveDb.innerHTML = originalBtnHtml;
+                    btnSaveDb.classList.remove('opacity-80', 'cursor-not-allowed', 'bg-green-600', 'hover:bg-green-700');
+                    btnSaveDb.classList.add('bg-[#e65d12]', 'hover:bg-[#cc4e0b]');
+                    lucide.createIcons();
+                }, 3000);
+            }
+        };
+
+        // --- ANIMACIÓN Y CONTROLES UI ---
+        const generateConfetti = () => {
             if (isConfettiActive) return; 
             isConfettiActive = true;
-            
             const colors = ['#ffffff', '#000000', '#e65d12'];
             const amount = window.innerWidth < 768 ? 50 : 100; 
-            
             for (let i = 0; i < amount; i++) {
                 const confetti = document.createElement('div');
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 const width = Math.random() * 12 + 6; 
                 const height = Math.random() * 6 + 4;
                 const isBlurred = Math.random() > 0.8; 
-                const blurAmount = Math.random() * 3 + 1;
                 
                 confetti.style.position = 'absolute';
                 confetti.style.left = `${Math.random() * 100}vw`;
@@ -336,288 +548,254 @@
                 confetti.style.borderRadius = '2px';
                 
                 if (isBlurred) {
-                    confetti.style.filter = `blur(${blurAmount}px)`;
+                    confetti.style.filter = `blur(${Math.random() * 3 + 1}px)`;
                     confetti.style.opacity = '0.8';
                 }
                 
-                const duration = Math.random() * 3 + 2.5; 
-                const delay = Math.random() * 5; 
-                confetti.style.animation = `confettiFall ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s infinite`;
-                
+                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2.5}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${Math.random() * 5}s infinite`;
                 confettiContainer.appendChild(confetti);
             }
-        }
+        };
 
-        function playAnimation() {
+        const playAnimation = () => {
             msgContainer.classList.remove('hidden');
             void msgContainer.offsetWidth; 
             msgContainer.classList.add('animate-motion-pop');
             btnReveal.style.display = 'none'; 
             generateConfetti();
-        }
+        };
 
-        btnReveal.addEventListener('click', playAnimation);
-        btnReplayAnim.addEventListener('click', playAnimation);
+        const applyLineStyle = (config) => {
+            const lineEl = document.getElementById(`line-${config.id}`);
+            if(!lineEl) return;
+            lineEl.textContent = config.text;
+            lineEl.style.fontFamily = config.font;
+            lineEl.style.fontSize = `${config.size}px`;
+            lineEl.style.color = config.color;
+            lineEl.style.fontWeight = config.bold ? 'bold' : 'normal';
+            lineEl.style.lineHeight = config.lineHeight;
+            lineEl.style.textAlign = config.align;
+        };
 
-        btnReset.addEventListener('click', () => {
-            msgContainer.classList.add('hidden');
-            msgContainer.classList.remove('animate-motion-pop');
-            btnReveal.style.display = 'flex';
-            confettiContainer.innerHTML = '';
-            isConfettiActive = false;
-            toggleSettings();
-        });
-
-        // --- LÓGICA DE CONTRASEÑA Y PANEL ---
-        function openPasswordModal() {
-            pwdModal.classList.remove('hidden');
-            setTimeout(() => { pwdModal.classList.remove('opacity-0'); pwdBox.classList.remove('scale-95'); }, 10);
-            inputPwd.value = '';
-            errorPwd.classList.remove('opacity-100');
-            inputPwd.focus();
-        }
-
-        function closePasswordModal() {
-            pwdModal.classList.add('opacity-0');
-            pwdBox.classList.add('scale-95');
-            setTimeout(() => { pwdModal.classList.add('hidden'); }, 300);
-        }
-
-        function verifyPassword() {
-            if (inputPwd.value === PASSWORD_CORRECTA) {
-                closePasswordModal();
-                toggleSettings();
-            } else {
-                errorPwd.classList.add('opacity-100');
-                inputPwd.value = '';
-                inputPwd.focus();
-            }
-        }
-
-        btnOpenSettings.addEventListener('click', openPasswordModal);
-        btnCancelPwd.addEventListener('click', closePasswordModal);
-        btnSubmitPwd.addEventListener('click', verifyPassword);
-        
-        inputPwd.addEventListener('keypress', (e) => { if(e.key === 'Enter') verifyPassword(); });
-
-        function toggleSettings() {
-            const isClosed = settingsPanel.classList.contains('translate-x-full');
-            if (isClosed) {
-                settingsPanel.classList.remove('translate-x-full');
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-            } else {
-                settingsPanel.classList.add('translate-x-full');
-                overlay.classList.add('opacity-0');
-                setTimeout(() => overlay.classList.add('hidden'), 500); 
-            }
-        }
-
-        btnCloseSettings.addEventListener('click', toggleSettings);
-        overlay.addEventListener('click', toggleSettings);
-
-
-        // --- LÓGICA GLOBAL DE IMÁGENES Y POSICIÓN ---
-        function updateTextTransform() {
+        const updateTextTransformUI = () => {
             msgContainer.style.transform = `translate(${textTransform.x}px, ${textTransform.y}px)`;
-        }
-        ctrlTextX.addEventListener('input', (e) => { textTransform.x = e.target.value; valTextX.textContent = `${textTransform.x}px`; updateTextTransform(); });
-        ctrlTextY.addEventListener('input', (e) => { textTransform.y = e.target.value; valTextY.textContent = `${textTransform.y}px`; updateTextTransform(); });
+            document.getElementById('val-text-x').textContent = `${textTransform.x}px`;
+            document.getElementById('val-text-y').textContent = `${textTransform.y}px`;
+        };
 
-        ctrlBgUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    bgImageLayer.style.backgroundImage = `url(${event.target.result})`;
-                    bgImageLayer.style.opacity = '1';
-                    btnRemoveBg.classList.remove('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        btnRemoveBg.addEventListener('click', () => {
-            bgImageLayer.style.opacity = '0';
-            setTimeout(() => { bgImageLayer.style.backgroundImage = 'none'; }, 300);
-            ctrlBgUpload.value = ''; 
-            btnRemoveBg.classList.add('hidden');
-        });
-
-        ctrlImgUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    mainLogo.src = event.target.result;
-                    mainLogo.classList.remove('mix-blend-screen');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function updateLogoTransform() {
+        const updateLogoTransformUI = () => {
             logoWrapper.style.transform = `translate(${logoTransform.x}px, ${logoTransform.y}px) scale(${logoTransform.scale / 100})`;
-        }
-        ctrlImgSize.addEventListener('input', (e) => { logoTransform.scale = e.target.value; valImgSize.textContent = `${logoTransform.scale}%`; updateLogoTransform(); });
-        ctrlImgX.addEventListener('input', (e) => { logoTransform.x = e.target.value; valImgX.textContent = `${logoTransform.x}px`; updateLogoTransform(); });
-        ctrlImgY.addEventListener('input', (e) => { logoTransform.y = e.target.value; valImgY.textContent = `${logoTransform.y}px`; updateLogoTransform(); });
+            document.getElementById('val-img-size').textContent = `${logoTransform.scale}%`;
+            document.getElementById('val-img-x').textContent = `${logoTransform.x}px`;
+            document.getElementById('val-img-y').textContent = `${logoTransform.y}px`;
+        };
 
-        
-        // --- LÓGICA DE EDICIÓN INDEPENDIENTE (ACORDEONES) ---
-        
-        // Configuración inicial de las 4 líneas
-        const linesConfig = [
-            { id: 1, text: "¡SORPRESA!", size: 40, bold: true, align: "center", lineHeight: 1.2 },
-            { id: 2, text: "Bono único especial para ti", size: 32, bold: true, align: "center", lineHeight: 1.5 },
-            { id: 3, text: "de 50$ depositados en tu cuenta.", size: 24, bold: false, align: "center", lineHeight: 1.5 },
-            { id: 4, text: "Feliz día.", size: 28, bold: true, align: "center", lineHeight: 1.5 }
-        ];
-
-        const accordionContainer = document.getElementById('lines-accordion-container');
-
-        // Generar dinámicamente los acordeones y sus listeners
-        linesConfig.forEach((config, index) => {
-            const isOpen = index === 0 ? 'open' : ''; // Solo el primero abierto por defecto
-            
-            const html = `
-            <details class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm" ${isOpen}>
-                <summary class="cursor-pointer p-3 text-sm font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors flex justify-between items-center outline-none">
-                    Línea ${config.id}
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500 transition-transform"></i>
-                </summary>
-                <div class="p-4 space-y-4 border-t border-gray-200">
-                    
-                    <!-- Texto -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Texto</label>
-                        <input type="text" id="ctrl-text-${config.id}" value="${config.text}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] focus:border-transparent outline-none">
-                    </div>
-                    
-                    <!-- Fuente -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Fuente</label>
-                        <select id="ctrl-font-${config.id}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] outline-none">
-                            <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Modern Sans</option>
-                            <option value="Georgia, serif">Georgia</option>
-                            <option value="'Courier New', Courier, monospace">Courier New</option>
-                            <option value="'Impact', sans-serif">Impact</option>
-                            <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans</option>
-                        </select>
-                    </div>
-
-                    <!-- Tamaño y Color en 2 columnas -->
-                    <div class="flex gap-4">
-                        <div class="flex-1">
-                            <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
-                                <span>Tamaño</span>
-                                <span id="val-size-${config.id}" class="text-[#e65d12]">${config.size}px</span>
-                            </label>
-                            <input type="range" id="ctrl-size-${config.id}" min="16" max="72" value="${config.size}" class="w-full h-2">
+        // --- RENDERIZADO DEL PANEL DINÁMICO ---
+        const renderAccordions = () => {
+            accordionContainer.innerHTML = '';
+            linesConfig.forEach((config, index) => {
+                const isOpen = index === 0 ? 'open' : ''; 
+                const html = `
+                <details class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm" ${isOpen}>
+                    <summary class="cursor-pointer p-3 text-sm font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors flex justify-between items-center outline-none">
+                        Línea ${config.id}
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 space-y-4 border-t border-gray-200">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Texto</label>
+                            <input type="text" id="ctrl-text-${config.id}" value="${config.text}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] outline-none">
                         </div>
-                        <div class="w-16">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Color</label>
-                            <input type="color" id="ctrl-color-${config.id}" value="#ffffff" class="w-full h-8 rounded cursor-pointer border-0 p-0 bg-transparent">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Fuente</label>
+                            <select id="ctrl-font-${config.id}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] outline-none">
+                                <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" ${config.font.includes('Segoe') ? 'selected':''}>Modern Sans</option>
+                                <option value="Georgia, serif" ${config.font.includes('Georgia') ? 'selected':''}>Georgia</option>
+                                <option value="'Courier New', Courier, monospace" ${config.font.includes('Courier') ? 'selected':''}>Courier New</option>
+                                <option value="'Impact', sans-serif" ${config.font.includes('Impact') ? 'selected':''}>Impact</option>
+                                <option value="'Comic Sans MS', cursive, sans-serif" ${config.font.includes('Comic') ? 'selected':''}>Comic Sans</option>
+                            </select>
                         </div>
-                    </div>
-
-                    <!-- Negrita y Alineación -->
-                    <div class="flex gap-4 items-end">
-                        <div class="w-20">
-                            <label class="flex items-center gap-2 cursor-pointer pb-1">
-                                <input type="checkbox" id="ctrl-bold-${config.id}" ${config.bold ? 'checked' : ''} class="w-4 h-4 text-[#e65d12] rounded border-gray-300 focus:ring-[#e65d12]">
-                                <span class="text-xs font-semibold text-gray-600">Negrita</span>
-                            </label>
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Alineación</label>
-                            <div class="flex bg-gray-100 p-1 rounded-md">
-                                <button id="btn-align-left-${config.id}" class="btn-align-${config.id} flex-1 py-1 text-gray-600 rounded hover:bg-white transition-all"><i data-lucide="align-left" class="w-3.5 h-3.5 mx-auto"></i></button>
-                                <button id="btn-align-center-${config.id}" class="btn-align-${config.id} flex-1 py-1 text-[#e65d12] bg-white shadow rounded transition-all"><i data-lucide="align-center" class="w-3.5 h-3.5 mx-auto"></i></button>
-                                <button id="btn-align-right-${config.id}" class="btn-align-${config.id} flex-1 py-1 text-gray-600 rounded hover:bg-white transition-all"><i data-lucide="align-right" class="w-3.5 h-3.5 mx-auto"></i></button>
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
+                                    <span>Tamaño</span>
+                                    <span id="val-size-${config.id}" class="text-[#e65d12]">${config.size}px</span>
+                                </label>
+                                <input type="range" id="ctrl-size-${config.id}" min="16" max="72" value="${config.size}" class="w-full h-2">
+                            </div>
+                            <div class="w-16">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Color</label>
+                                <input type="color" id="ctrl-color-${config.id}" value="${config.color}" class="w-full h-8 rounded cursor-pointer border-0 p-0 bg-transparent">
                             </div>
                         </div>
+                        <div class="flex gap-4 items-end">
+                            <div class="w-20">
+                                <label class="flex items-center gap-2 cursor-pointer pb-1">
+                                    <input type="checkbox" id="ctrl-bold-${config.id}" ${config.bold ? 'checked' : ''} class="w-4 h-4 text-[#e65d12] rounded border-gray-300 focus:ring-[#e65d12]">
+                                    <span class="text-xs font-semibold text-gray-600">Negrita</span>
+                                </label>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Alineación</label>
+                                <div class="flex bg-gray-100 p-1 rounded-md">
+                                    <button id="btn-align-left-${config.id}" class="btn-align-${config.id} ${config.align === 'left' ? 'text-[#e65d12] bg-white shadow' : 'text-gray-600'} flex-1 py-1 rounded hover:bg-white transition-all"><i data-lucide="align-left" class="w-3.5 h-3.5 mx-auto"></i></button>
+                                    <button id="btn-align-center-${config.id}" class="btn-align-${config.id} ${config.align === 'center' ? 'text-[#e65d12] bg-white shadow' : 'text-gray-600'} flex-1 py-1 rounded transition-all"><i data-lucide="align-center" class="w-3.5 h-3.5 mx-auto"></i></button>
+                                    <button id="btn-align-right-${config.id}" class="btn-align-${config.id} ${config.align === 'right' ? 'text-[#e65d12] bg-white shadow' : 'text-gray-600'} flex-1 py-1 rounded hover:bg-white transition-all"><i data-lucide="align-right" class="w-3.5 h-3.5 mx-auto"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
+                                <span>Interlineado</span>
+                                <span id="val-line-${config.id}" class="text-[#e65d12]">${config.lineHeight}</span>
+                            </label>
+                            <input type="range" id="ctrl-line-${config.id}" min="1" max="3" step="0.1" value="${config.lineHeight}" class="w-full h-2">
+                        </div>
                     </div>
+                </details>
+                `;
+                accordionContainer.innerHTML += html;
+            });
+            lucide.createIcons();
+        };
 
-                    <!-- Interlineado -->
-                    <div>
-                        <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
-                            <span>Interlineado</span>
-                            <span id="val-line-${config.id}" class="text-[#e65d12]">${config.lineHeight}</span>
-                        </label>
-                        <input type="range" id="ctrl-line-${config.id}" min="1" max="3" step="0.1" value="${config.lineHeight}" class="w-full h-2">
-                    </div>
-
-                </div>
-            </details>
-            `;
-            accordionContainer.innerHTML += html;
-        });
-
-        // Refrescar iconos Lucide recién inyectados
-        lucide.createIcons();
-
-        // Asignar los Event Listeners para cada línea independientemente
-        linesConfig.forEach(config => {
-            const lineEl = document.getElementById(`line-${config.id}`);
-            
-            const ctrlText = document.getElementById(`ctrl-text-${config.id}`);
-            const ctrlFont = document.getElementById(`ctrl-font-${config.id}`);
-            const ctrlSize = document.getElementById(`ctrl-size-${config.id}`);
-            const valSize = document.getElementById(`val-size-${config.id}`);
-            const ctrlColor = document.getElementById(`ctrl-color-${config.id}`);
-            const ctrlBold = document.getElementById(`ctrl-bold-${config.id}`);
-            const ctrlLine = document.getElementById(`ctrl-line-${config.id}`);
-            const valLine = document.getElementById(`val-line-${config.id}`);
-            
-            const btnLeft = document.getElementById(`btn-align-left-${config.id}`);
-            const btnCenter = document.getElementById(`btn-align-center-${config.id}`);
-            const btnRight = document.getElementById(`btn-align-right-${config.id}`);
-            const allAlignBtns = document.querySelectorAll(`.btn-align-${config.id}`);
-
-            // Texto
-            ctrlText.addEventListener('input', (e) => lineEl.textContent = e.target.value);
-            
-            // Fuente
-            ctrlFont.addEventListener('change', (e) => lineEl.style.fontFamily = e.target.value);
-            
-            // Tamaño
-            ctrlSize.addEventListener('input', (e) => {
-                lineEl.style.fontSize = `${e.target.value}px`;
-                valSize.textContent = `${e.target.value}px`;
+        const setupEventListeners = () => {
+            // Contraseña y Modal
+            document.getElementById('btn-open-settings').addEventListener('click', () => {
+                pwdModal.classList.remove('hidden');
+                setTimeout(() => { pwdModal.classList.remove('opacity-0'); document.getElementById('password-box').classList.remove('scale-95'); }, 10);
+                inputPwd.value = '';
+                errorPwd.classList.remove('opacity-100');
+                inputPwd.focus();
             });
 
-            // Color
-            ctrlColor.addEventListener('input', (e) => lineEl.style.color = e.target.value);
-
-            // Negrita
-            ctrlBold.addEventListener('change', (e) => {
-                lineEl.style.fontWeight = e.target.checked ? 'bold' : 'normal';
+            document.getElementById('btn-cancel-pwd').addEventListener('click', () => {
+                pwdModal.classList.add('opacity-0');
+                document.getElementById('password-box').classList.add('scale-95');
+                setTimeout(() => { pwdModal.classList.add('hidden'); }, 300);
             });
 
-            // Interlineado
-            ctrlLine.addEventListener('input', (e) => {
-                lineEl.style.lineHeight = e.target.value;
-                valLine.textContent = e.target.value;
-            });
-
-            // Alineación
-            const setAlign = (alignValue, clickedBtn) => {
-                lineEl.style.textAlign = alignValue;
-                // Reset estilos de los 3 botones de ESTA línea
-                allAlignBtns.forEach(btn => {
-                    btn.classList.remove('text-[#e65d12]', 'bg-white', 'shadow');
-                    btn.classList.add('text-gray-600');
-                });
-                // Activar el pulsado
-                clickedBtn.classList.remove('text-gray-600');
-                clickedBtn.classList.add('text-[#e65d12]', 'bg-white', 'shadow');
+            const verifyPassword = () => {
+                if (inputPwd.value === PASSWORD_CORRECTA) {
+                    pwdModal.classList.add('opacity-0');
+                    document.getElementById('password-box').classList.add('scale-95');
+                    setTimeout(() => { pwdModal.classList.add('hidden'); }, 300);
+                    settingsPanel.classList.remove('translate-x-full');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                } else {
+                    errorPwd.classList.add('opacity-100');
+                    inputPwd.value = ''; inputPwd.focus();
+                }
             };
+            document.getElementById('btn-submit-pwd').addEventListener('click', verifyPassword);
+            inputPwd.addEventListener('keypress', (e) => { if(e.key === 'Enter') verifyPassword(); });
 
-            btnLeft.addEventListener('click', () => setAlign('left', btnLeft));
-            btnCenter.addEventListener('click', () => setAlign('center', btnCenter));
-            btnRight.addEventListener('click', () => setAlign('right', btnRight));
-        });
+            const closePanel = () => {
+                settingsPanel.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+            };
+            document.getElementById('btn-close-settings').addEventListener('click', closePanel);
+            overlay.addEventListener('click', closePanel);
+
+            // Botones Principales
+            btnReveal.addEventListener('click', playAnimation);
+            document.getElementById('btn-replay-anim').addEventListener('click', playAnimation);
+            document.getElementById('btn-reset').addEventListener('click', () => {
+                msgContainer.classList.add('hidden');
+                msgContainer.classList.remove('animate-motion-pop');
+                btnReveal.style.display = 'flex';
+                confettiContainer.innerHTML = '';
+                isConfettiActive = false;
+                closePanel();
+            });
+
+            // Guardado
+            document.getElementById('btn-save-db').addEventListener('click', saveSettings);
+
+            // Subida de Imágenes
+            document.getElementById('ctrl-bg-upload').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    compressImage(file, false, (base64) => {
+                        bgImageBase64 = base64;
+                        bgImageLayer.style.backgroundImage = `url(${base64})`;
+                        bgImageLayer.style.opacity = '1';
+                        btnRemoveBg.classList.remove('hidden');
+                    });
+                }
+            });
+
+            btnRemoveBg.addEventListener('click', () => {
+                bgImageLayer.style.opacity = '0';
+                setTimeout(() => { bgImageLayer.style.backgroundImage = 'none'; }, 300);
+                bgImageBase64 = "";
+                document.getElementById('ctrl-bg-upload').value = ''; 
+                btnRemoveBg.classList.add('hidden');
+            });
+
+            document.getElementById('ctrl-img-upload').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    compressImage(file, true, (base64) => {
+                        logoImageBase64 = base64;
+                        mainLogo.src = base64;
+                        mainLogo.classList.remove('mix-blend-screen');
+                        mainLogo.style.display = 'block';
+                    });
+                }
+            });
+
+            // Transformaciones
+            document.getElementById('ctrl-text-x').addEventListener('input', (e) => { textTransform.x = e.target.value; updateTextTransformUI(); });
+            document.getElementById('ctrl-text-y').addEventListener('input', (e) => { textTransform.y = e.target.value; updateTextTransformUI(); });
+            document.getElementById('ctrl-img-size').addEventListener('input', (e) => { logoTransform.scale = e.target.value; updateLogoTransformUI(); });
+            document.getElementById('ctrl-img-x').addEventListener('input', (e) => { logoTransform.x = e.target.value; updateLogoTransformUI(); });
+            document.getElementById('ctrl-img-y').addEventListener('input', (e) => { logoTransform.y = e.target.value; updateLogoTransformUI(); });
+
+            // Event Listeners Dinámicos de Líneas
+            linesConfig.forEach(config => {
+                const lineEl = document.getElementById(`line-${config.id}`);
+                const ctrlText = document.getElementById(`ctrl-text-${config.id}`);
+                const ctrlFont = document.getElementById(`ctrl-font-${config.id}`);
+                const ctrlSize = document.getElementById(`ctrl-size-${config.id}`);
+                const valSize = document.getElementById(`val-size-${config.id}`);
+                const ctrlColor = document.getElementById(`ctrl-color-${config.id}`);
+                const ctrlBold = document.getElementById(`ctrl-bold-${config.id}`);
+                const ctrlLine = document.getElementById(`ctrl-line-${config.id}`);
+                const valLine = document.getElementById(`val-line-${config.id}`);
+                const btnLeft = document.getElementById(`btn-align-left-${config.id}`);
+                const btnCenter = document.getElementById(`btn-align-center-${config.id}`);
+                const btnRight = document.getElementById(`btn-align-right-${config.id}`);
+                const allAlignBtns = document.querySelectorAll(`.btn-align-${config.id}`);
+
+                ctrlText.addEventListener('input', (e) => lineEl.textContent = e.target.value);
+                ctrlFont.addEventListener('change', (e) => lineEl.style.fontFamily = e.target.value);
+                ctrlSize.addEventListener('input', (e) => { lineEl.style.fontSize = `${e.target.value}px`; valSize.textContent = `${e.target.value}px`; });
+                ctrlColor.addEventListener('input', (e) => lineEl.style.color = e.target.value);
+                ctrlBold.addEventListener('change', (e) => { lineEl.style.fontWeight = e.target.checked ? 'bold' : 'normal'; });
+                ctrlLine.addEventListener('input', (e) => { lineEl.style.lineHeight = e.target.value; valLine.textContent = e.target.value; });
+
+                const setAlign = (alignValue, clickedBtn) => {
+                    lineEl.style.textAlign = alignValue;
+                    allAlignBtns.forEach(btn => {
+                        btn.classList.remove('text-[#e65d12]', 'bg-white', 'shadow');
+                        btn.classList.add('text-gray-600');
+                    });
+                    clickedBtn.classList.remove('text-gray-600');
+                    clickedBtn.classList.add('text-[#e65d12]', 'bg-white', 'shadow');
+                };
+
+                btnLeft.addEventListener('click', () => setAlign('left', btnLeft));
+                btnCenter.addEventListener('click', () => setAlign('center', btnCenter));
+                btnRight.addEventListener('click', () => setAlign('right', btnRight));
+            });
+        };
+
+        // Arrancar Sistema
+        initSystem();
 
     </script>
 </body>
