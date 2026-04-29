@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Sorpresa Especial!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Animación estilo Motion Graphics para la aparición del texto */
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(40px);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05) translateY(-10px);
+            }
+            75% {
+                transform: scale(0.98) translateY(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .animate-motion-pop {
+            animation: popIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* Animación para el Confeti */
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg) translateX(100px); opacity: 0; }
+        }
+
+        /* Estilos personalizados para los sliders del panel */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #e65d12;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+        
+        /* Ocultar el panel de scroll horizontal global si es necesario */
+        body {
+            overflow-x: hidden;
+            background-color: #e65d12;
+        }
+
+        /* Capa de fondo para imagen subida */
+        #bg-image-layer {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Animaciones para los paneles acordeón (Details) */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary .lucide-chevron-down {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen relative font-sans selection:bg-white selection:text-[#e65d12]">
+
+    <!-- Fondos de la landing -->
+    <div id="bg-gradient-layer" class="fixed inset-0 bg-gradient-to-br from-[#e65d12] via-[#ff7e38] to-[#cc4e0b] -z-20"></div>
+    <div id="bg-image-layer" class="fixed inset-0 opacity-0 -z-10"></div>
+
+    <!-- Botón para abrir panel de ajustes -->
+    <button id="btn-open-settings" class="fixed top-4 right-4 md:top-6 md:right-6 text-white hover:text-gray-200 transition-colors z-40 bg-white/20 p-3 rounded-full backdrop-blur-sm shadow-lg hover:scale-105 active:scale-95">
+        <i data-lucide="settings" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Contenedor del Confeti -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden z-20"></div>
+
+    <!-- Contenido Principal -->
+    <main class="w-full min-h-screen px-4 md:px-6 flex flex-col items-center justify-center text-center z-10 relative">
+        
+        <!-- Logo -->
+        <div id="logo-wrapper" class="transition-transform duration-200 ease-out z-30">
+            <!-- Se usa mix-blend-screen por defecto -->
+            <img id="main-logo" src="LOGO-blanco.jpg" alt="JGR Logo" class="w-40 sm:w-48 md:w-64 mb-8 md:mb-12 object-contain mix-blend-screen drop-shadow-2xl">
+        </div>
+
+        <!-- Botón de Acción -->
+        <button id="btn-reveal" class="bg-white text-[#e65d12] font-black text-lg sm:text-xl md:text-2xl py-3 px-8 md:py-4 md:px-10 rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.2)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all duration-300 ease-out flex items-center gap-2 group z-30">
+            ¡te lo mereces!
+            <i data-lucide="gift" class="w-5 h-5 md:w-6 md:h-6 group-hover:rotate-12 transition-transform"></i>
+        </button>
+
+        <!-- Contenedor del Mensaje Oculto -->
+        <div id="message-container" class="mt-8 md:mt-12 opacity-0 hidden w-full z-30 transition-transform duration-200 ease-out">
+            <div id="dynamic-text" class="text-white drop-shadow-md transition-colors duration-200">
+                <span id="line-1" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40px; font-weight: bold; text-align: center; color: #ffffff; line-height: 1.2;">¡SORPRESA!</span>
+                <span id="line-2" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 32px; font-weight: bold; text-align: center; color: #ffffff; line-height: 1.5;">Bono único especial para ti</span>
+                <span id="line-3" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24px; font-weight: normal; text-align: center; color: #ffffff; line-height: 1.5;">de 50$ depositados en tu cuenta.</span>
+                <span id="line-4" class="block" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 28px; font-weight: bold; text-align: center; color: #ffffff; line-height: 1.5;">Feliz día.</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal de Contraseña (Custom UI) -->
+    <div id="password-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300 px-4">
+        <div id="password-box" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center transform scale-95 transition-transform duration-300">
+            <div class="mx-auto w-12 h-12 bg-orange-100 text-[#e65d12] rounded-full flex items-center justify-center mb-4">
+                <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Acceso Restringido</h3>
+            <p class="text-sm text-gray-500 mb-6">Ingresa la contraseña para configurar la página.</p>
+            
+            <input type="password" id="settings-password" placeholder="Contraseña" class="w-full border-2 border-gray-200 focus:border-[#e65d12] focus:ring-0 p-3 rounded-xl mb-2 text-center text-lg outline-none transition-colors">
+            <p id="pwd-error" class="text-red-500 text-sm mb-4 h-5 opacity-0 transition-opacity">Contraseña incorrecta</p>
+            
+            <div class="flex gap-3 justify-center">
+                <button id="btn-cancel-pwd" class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors">Cancelar</button>
+                <button id="btn-submit-pwd" class="flex-1 bg-[#e65d12] text-white px-4 py-3 rounded-xl font-semibold hover:bg-[#cc4e0b] shadow-lg shadow-orange-500/30 transition-colors">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Lateral de Ajustes -->
+    <aside id="settings-panel" class="fixed top-0 right-0 h-full w-full sm:w-80 md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-500 ease-in-out z-50 flex flex-col">
+        
+        <!-- Cabecera del Panel -->
+        <div class="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-5 h-5 text-[#e65d12]"></i>
+                Configuración
+            </h2>
+            <button id="btn-close-settings" class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Controles -->
+        <div class="flex-1 overflow-y-auto p-5 md:p-6 space-y-6">
+            
+            <!-- Carga de Fondo de Pantalla -->
+            <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
+                    <i data-lucide="image" class="w-4 h-4"></i> Fondo de Pantalla
+                </label>
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-gray-600">Subir Imagen de Fondo</label>
+                    <input type="file" id="ctrl-bg-upload" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer">
+                    <button id="btn-remove-bg" class="mt-2 text-xs text-red-500 hover:text-red-700 hidden">Eliminar imagen y usar degradado</button>
+                </div>
+            </div>
+
+            <!-- Carga y Posición del Logo -->
+            <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
+                    <i data-lucide="image-plus" class="w-4 h-4"></i> Control de Logo
+                </label>
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-gray-600">Subir Logo (PNG/JPG)</label>
+                    <input type="file" id="ctrl-img-upload" accept="image/png, image/jpeg" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#e65d12] file:text-white hover:file:bg-[#cc4e0b] cursor-pointer">
+                </div>
+                <div class="space-y-1 pt-2">
+                    <label class="flex justify-between text-xs font-semibold text-gray-600">
+                        <span>Tamaño / Escala</span>
+                        <span id="val-img-size" class="text-[#e65d12]">100%</span>
+                    </label>
+                    <input type="range" id="ctrl-img-size" min="50" max="250" value="100" class="w-full h-2">
+                </div>
+                <div class="space-y-1">
+                    <label class="flex justify-between text-xs font-semibold text-gray-600">
+                        <span>Horizontal (X)</span>
+                        <span id="val-img-x" class="text-[#e65d12]">0px</span>
+                    </label>
+                    <input type="range" id="ctrl-img-x" min="-300" max="300" value="0" class="w-full h-2">
+                </div>
+                <div class="space-y-1">
+                    <label class="flex justify-between text-xs font-semibold text-gray-600">
+                        <span>Vertical (Y)</span>
+                        <span id="val-img-y" class="text-[#e65d12]">0px</span>
+                    </label>
+                    <input type="range" id="ctrl-img-y" min="-300" max="300" value="0" class="w-full h-2">
+                </div>
+            </div>
+
+            <!-- Posición Global del Texto -->
+            <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-1 flex items-center gap-2">
+                    <i data-lucide="move" class="w-4 h-4"></i> Mover Todo el Mensaje
+                </label>
+                <div class="space-y-1">
+                    <label class="flex justify-between text-xs font-semibold text-gray-600">
+                        <span>Horizontal (X)</span>
+                        <span id="val-text-x" class="text-[#e65d12]">0px</span>
+                    </label>
+                    <input type="range" id="ctrl-text-x" min="-300" max="300" value="0" class="w-full h-2">
+                </div>
+                <div class="space-y-1 pt-2">
+                    <label class="flex justify-between text-xs font-semibold text-gray-600">
+                        <span>Vertical (Y)</span>
+                        <span id="val-text-y" class="text-[#e65d12]">0px</span>
+                    </label>
+                    <input type="range" id="ctrl-text-y" min="-300" max="300" value="0" class="w-full h-2">
+                </div>
+            </div>
+
+            <!-- Sección de Textos por Línea (Acordeones) -->
+            <div class="space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <label class="block text-sm font-bold text-[#e65d12] border-b border-gray-200 pb-2 mb-2 flex items-center gap-2">
+                    <i data-lucide="type" class="w-4 h-4"></i> Edición por Líneas
+                </label>
+
+                <!-- Bloque Generado Dinámicamente para las 4 Líneas en JS -->
+                <div id="lines-accordion-container" class="space-y-2">
+                    <!-- JS inyectará aquí los 4 acordeones -->
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="pt-4 border-t border-gray-200 space-y-3 pb-8">
+                 <button id="btn-replay-anim" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <i data-lucide="play" class="w-4 h-4"></i>
+                    Reproducir Animación
+                </button>
+                <button id="btn-reset" class="w-full border-2 border-red-500 text-red-500 hover:bg-red-50 font-bold py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    Reiniciar desde el principio
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay oscuro para el panel -->
+    <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+
+    <script>
+        // Inicializar Iconos Globales
+        lucide.createIcons();
+
+        // Elementos del DOM Generales
+        const btnReveal = document.getElementById('btn-reveal');
+        const msgContainer = document.getElementById('message-container');
+        const confettiContainer = document.getElementById('confetti-container');
+        const mainLogo = document.getElementById('main-logo');
+        const logoWrapper = document.getElementById('logo-wrapper');
+        
+        // Modal de Contraseña
+        const btnOpenSettings = document.getElementById('btn-open-settings');
+        const pwdModal = document.getElementById('password-modal');
+        const pwdBox = document.getElementById('password-box');
+        const inputPwd = document.getElementById('settings-password');
+        const btnCancelPwd = document.getElementById('btn-cancel-pwd');
+        const btnSubmitPwd = document.getElementById('btn-submit-pwd');
+        const errorPwd = document.getElementById('pwd-error');
+
+        // Panel y Overlay
+        const settingsPanel = document.getElementById('settings-panel');
+        const btnCloseSettings = document.getElementById('btn-close-settings');
+        const overlay = document.getElementById('overlay');
+        
+        // Botones de Acción
+        const btnReplayAnim = document.getElementById('btn-replay-anim');
+        const btnReset = document.getElementById('btn-reset');
+
+        // Controles Globales (Posición y Fondos)
+        const ctrlTextX = document.getElementById('ctrl-text-x');
+        const ctrlTextY = document.getElementById('ctrl-text-y');
+        const valTextX = document.getElementById('val-text-x');
+        const valTextY = document.getElementById('val-text-y');
+        const ctrlImgUpload = document.getElementById('ctrl-img-upload');
+        const ctrlImgSize = document.getElementById('ctrl-img-size');
+        const ctrlImgX = document.getElementById('ctrl-img-x');
+        const ctrlImgY = document.getElementById('ctrl-img-y');
+        const ctrlBgUpload = document.getElementById('ctrl-bg-upload');
+        const btnRemoveBg = document.getElementById('btn-remove-bg');
+        const bgImageLayer = document.getElementById('bg-image-layer');
+
+        // Displays Globales
+        const valImgSize = document.getElementById('val-img-size');
+        const valImgX = document.getElementById('val-img-x');
+        const valImgY = document.getElementById('val-img-y');
+
+        // Variables de estado
+        let isConfettiActive = false;
+        const PASSWORD_CORRECTA = "1234";
+        let logoTransform = { x: 0, y: 0, scale: 100 };
+        let textTransform = { x: 0, y: 0 };
+
+
+        // --- FUNCIONES DE CONFETI Y ANIMACIÓN ---
+        function generateConfetti() {
+            if (isConfettiActive) return; 
+            isConfettiActive = true;
+            
+            const colors = ['#ffffff', '#000000', '#e65d12'];
+            const amount = window.innerWidth < 768 ? 50 : 100; 
+            
+            for (let i = 0; i < amount; i++) {
+                const confetti = document.createElement('div');
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const width = Math.random() * 12 + 6; 
+                const height = Math.random() * 6 + 4;
+                const isBlurred = Math.random() > 0.8; 
+                const blurAmount = Math.random() * 3 + 1;
+                
+                confetti.style.position = 'absolute';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `-50px`;
+                confetti.style.width = `${width}px`;
+                confetti.style.height = `${height}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.borderRadius = '2px';
+                
+                if (isBlurred) {
+                    confetti.style.filter = `blur(${blurAmount}px)`;
+                    confetti.style.opacity = '0.8';
+                }
+                
+                const duration = Math.random() * 3 + 2.5; 
+                const delay = Math.random() * 5; 
+                confetti.style.animation = `confettiFall ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s infinite`;
+                
+                confettiContainer.appendChild(confetti);
+            }
+        }
+
+        function playAnimation() {
+            msgContainer.classList.remove('hidden');
+            void msgContainer.offsetWidth; 
+            msgContainer.classList.add('animate-motion-pop');
+            btnReveal.style.display = 'none'; 
+            generateConfetti();
+        }
+
+        btnReveal.addEventListener('click', playAnimation);
+        btnReplayAnim.addEventListener('click', playAnimation);
+
+        btnReset.addEventListener('click', () => {
+            msgContainer.classList.add('hidden');
+            msgContainer.classList.remove('animate-motion-pop');
+            btnReveal.style.display = 'flex';
+            confettiContainer.innerHTML = '';
+            isConfettiActive = false;
+            toggleSettings();
+        });
+
+        // --- LÓGICA DE CONTRASEÑA Y PANEL ---
+        function openPasswordModal() {
+            pwdModal.classList.remove('hidden');
+            setTimeout(() => { pwdModal.classList.remove('opacity-0'); pwdBox.classList.remove('scale-95'); }, 10);
+            inputPwd.value = '';
+            errorPwd.classList.remove('opacity-100');
+            inputPwd.focus();
+        }
+
+        function closePasswordModal() {
+            pwdModal.classList.add('opacity-0');
+            pwdBox.classList.add('scale-95');
+            setTimeout(() => { pwdModal.classList.add('hidden'); }, 300);
+        }
+
+        function verifyPassword() {
+            if (inputPwd.value === PASSWORD_CORRECTA) {
+                closePasswordModal();
+                toggleSettings();
+            } else {
+                errorPwd.classList.add('opacity-100');
+                inputPwd.value = '';
+                inputPwd.focus();
+            }
+        }
+
+        btnOpenSettings.addEventListener('click', openPasswordModal);
+        btnCancelPwd.addEventListener('click', closePasswordModal);
+        btnSubmitPwd.addEventListener('click', verifyPassword);
+        
+        inputPwd.addEventListener('keypress', (e) => { if(e.key === 'Enter') verifyPassword(); });
+
+        function toggleSettings() {
+            const isClosed = settingsPanel.classList.contains('translate-x-full');
+            if (isClosed) {
+                settingsPanel.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                settingsPanel.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 500); 
+            }
+        }
+
+        btnCloseSettings.addEventListener('click', toggleSettings);
+        overlay.addEventListener('click', toggleSettings);
+
+
+        // --- LÓGICA GLOBAL DE IMÁGENES Y POSICIÓN ---
+        function updateTextTransform() {
+            msgContainer.style.transform = `translate(${textTransform.x}px, ${textTransform.y}px)`;
+        }
+        ctrlTextX.addEventListener('input', (e) => { textTransform.x = e.target.value; valTextX.textContent = `${textTransform.x}px`; updateTextTransform(); });
+        ctrlTextY.addEventListener('input', (e) => { textTransform.y = e.target.value; valTextY.textContent = `${textTransform.y}px`; updateTextTransform(); });
+
+        ctrlBgUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    bgImageLayer.style.backgroundImage = `url(${event.target.result})`;
+                    bgImageLayer.style.opacity = '1';
+                    btnRemoveBg.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        btnRemoveBg.addEventListener('click', () => {
+            bgImageLayer.style.opacity = '0';
+            setTimeout(() => { bgImageLayer.style.backgroundImage = 'none'; }, 300);
+            ctrlBgUpload.value = ''; 
+            btnRemoveBg.classList.add('hidden');
+        });
+
+        ctrlImgUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    mainLogo.src = event.target.result;
+                    mainLogo.classList.remove('mix-blend-screen');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function updateLogoTransform() {
+            logoWrapper.style.transform = `translate(${logoTransform.x}px, ${logoTransform.y}px) scale(${logoTransform.scale / 100})`;
+        }
+        ctrlImgSize.addEventListener('input', (e) => { logoTransform.scale = e.target.value; valImgSize.textContent = `${logoTransform.scale}%`; updateLogoTransform(); });
+        ctrlImgX.addEventListener('input', (e) => { logoTransform.x = e.target.value; valImgX.textContent = `${logoTransform.x}px`; updateLogoTransform(); });
+        ctrlImgY.addEventListener('input', (e) => { logoTransform.y = e.target.value; valImgY.textContent = `${logoTransform.y}px`; updateLogoTransform(); });
+
+        
+        // --- LÓGICA DE EDICIÓN INDEPENDIENTE (ACORDEONES) ---
+        
+        // Configuración inicial de las 4 líneas
+        const linesConfig = [
+            { id: 1, text: "¡SORPRESA!", size: 40, bold: true, align: "center", lineHeight: 1.2 },
+            { id: 2, text: "Bono único especial para ti", size: 32, bold: true, align: "center", lineHeight: 1.5 },
+            { id: 3, text: "de 50$ depositados en tu cuenta.", size: 24, bold: false, align: "center", lineHeight: 1.5 },
+            { id: 4, text: "Feliz día.", size: 28, bold: true, align: "center", lineHeight: 1.5 }
+        ];
+
+        const accordionContainer = document.getElementById('lines-accordion-container');
+
+        // Generar dinámicamente los acordeones y sus listeners
+        linesConfig.forEach((config, index) => {
+            const isOpen = index === 0 ? 'open' : ''; // Solo el primero abierto por defecto
+            
+            const html = `
+            <details class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm" ${isOpen}>
+                <summary class="cursor-pointer p-3 text-sm font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors flex justify-between items-center outline-none">
+                    Línea ${config.id}
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500 transition-transform"></i>
+                </summary>
+                <div class="p-4 space-y-4 border-t border-gray-200">
+                    
+                    <!-- Texto -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Texto</label>
+                        <input type="text" id="ctrl-text-${config.id}" value="${config.text}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] focus:border-transparent outline-none">
+                    </div>
+                    
+                    <!-- Fuente -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Fuente</label>
+                        <select id="ctrl-font-${config.id}" class="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#e65d12] outline-none">
+                            <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Modern Sans</option>
+                            <option value="Georgia, serif">Georgia</option>
+                            <option value="'Courier New', Courier, monospace">Courier New</option>
+                            <option value="'Impact', sans-serif">Impact</option>
+                            <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans</option>
+                        </select>
+                    </div>
+
+                    <!-- Tamaño y Color en 2 columnas -->
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
+                                <span>Tamaño</span>
+                                <span id="val-size-${config.id}" class="text-[#e65d12]">${config.size}px</span>
+                            </label>
+                            <input type="range" id="ctrl-size-${config.id}" min="16" max="72" value="${config.size}" class="w-full h-2">
+                        </div>
+                        <div class="w-16">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Color</label>
+                            <input type="color" id="ctrl-color-${config.id}" value="#ffffff" class="w-full h-8 rounded cursor-pointer border-0 p-0 bg-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Negrita y Alineación -->
+                    <div class="flex gap-4 items-end">
+                        <div class="w-20">
+                            <label class="flex items-center gap-2 cursor-pointer pb-1">
+                                <input type="checkbox" id="ctrl-bold-${config.id}" ${config.bold ? 'checked' : ''} class="w-4 h-4 text-[#e65d12] rounded border-gray-300 focus:ring-[#e65d12]">
+                                <span class="text-xs font-semibold text-gray-600">Negrita</span>
+                            </label>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Alineación</label>
+                            <div class="flex bg-gray-100 p-1 rounded-md">
+                                <button id="btn-align-left-${config.id}" class="btn-align-${config.id} flex-1 py-1 text-gray-600 rounded hover:bg-white transition-all"><i data-lucide="align-left" class="w-3.5 h-3.5 mx-auto"></i></button>
+                                <button id="btn-align-center-${config.id}" class="btn-align-${config.id} flex-1 py-1 text-[#e65d12] bg-white shadow rounded transition-all"><i data-lucide="align-center" class="w-3.5 h-3.5 mx-auto"></i></button>
+                                <button id="btn-align-right-${config.id}" class="btn-align-${config.id} flex-1 py-1 text-gray-600 rounded hover:bg-white transition-all"><i data-lucide="align-right" class="w-3.5 h-3.5 mx-auto"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interlineado -->
+                    <div>
+                        <label class="flex justify-between text-xs font-semibold text-gray-600 mb-1">
+                            <span>Interlineado</span>
+                            <span id="val-line-${config.id}" class="text-[#e65d12]">${config.lineHeight}</span>
+                        </label>
+                        <input type="range" id="ctrl-line-${config.id}" min="1" max="3" step="0.1" value="${config.lineHeight}" class="w-full h-2">
+                    </div>
+
+                </div>
+            </details>
+            `;
+            accordionContainer.innerHTML += html;
+        });
+
+        // Refrescar iconos Lucide recién inyectados
+        lucide.createIcons();
+
+        // Asignar los Event Listeners para cada línea independientemente
+        linesConfig.forEach(config => {
+            const lineEl = document.getElementById(`line-${config.id}`);
+            
+            const ctrlText = document.getElementById(`ctrl-text-${config.id}`);
+            const ctrlFont = document.getElementById(`ctrl-font-${config.id}`);
+            const ctrlSize = document.getElementById(`ctrl-size-${config.id}`);
+            const valSize = document.getElementById(`val-size-${config.id}`);
+            const ctrlColor = document.getElementById(`ctrl-color-${config.id}`);
+            const ctrlBold = document.getElementById(`ctrl-bold-${config.id}`);
+            const ctrlLine = document.getElementById(`ctrl-line-${config.id}`);
+            const valLine = document.getElementById(`val-line-${config.id}`);
+            
+            const btnLeft = document.getElementById(`btn-align-left-${config.id}`);
+            const btnCenter = document.getElementById(`btn-align-center-${config.id}`);
+            const btnRight = document.getElementById(`btn-align-right-${config.id}`);
+            const allAlignBtns = document.querySelectorAll(`.btn-align-${config.id}`);
+
+            // Texto
+            ctrlText.addEventListener('input', (e) => lineEl.textContent = e.target.value);
+            
+            // Fuente
+            ctrlFont.addEventListener('change', (e) => lineEl.style.fontFamily = e.target.value);
+            
+            // Tamaño
+            ctrlSize.addEventListener('input', (e) => {
+                lineEl.style.fontSize = `${e.target.value}px`;
+                valSize.textContent = `${e.target.value}px`;
+            });
+
+            // Color
+            ctrlColor.addEventListener('input', (e) => lineEl.style.color = e.target.value);
+
+            // Negrita
+            ctrlBold.addEventListener('change', (e) => {
+                lineEl.style.fontWeight = e.target.checked ? 'bold' : 'normal';
+            });
+
+            // Interlineado
+            ctrlLine.addEventListener('input', (e) => {
+                lineEl.style.lineHeight = e.target.value;
+                valLine.textContent = e.target.value;
+            });
+
+            // Alineación
+            const setAlign = (alignValue, clickedBtn) => {
+                lineEl.style.textAlign = alignValue;
+                // Reset estilos de los 3 botones de ESTA línea
+                allAlignBtns.forEach(btn => {
+                    btn.classList.remove('text-[#e65d12]', 'bg-white', 'shadow');
+                    btn.classList.add('text-gray-600');
+                });
+                // Activar el pulsado
+                clickedBtn.classList.remove('text-gray-600');
+                clickedBtn.classList.add('text-[#e65d12]', 'bg-white', 'shadow');
+            };
+
+            btnLeft.addEventListener('click', () => setAlign('left', btnLeft));
+            btnCenter.addEventListener('click', () => setAlign('center', btnCenter));
+            btnRight.addEventListener('click', () => setAlign('right', btnRight));
+        });
+
+    </script>
+</body>
+</html>
